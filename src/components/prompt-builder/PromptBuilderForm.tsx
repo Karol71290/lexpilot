@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BasicInfoSelectors } from "./form-components/BasicInfoSelectors";
 import { PromptTechniqueSelector } from "./form-components/PromptTechniqueSelector";
 import { ContextEnrichment } from "./form-components/ContextEnrichment";
+import { AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface PromptBuilderFormProps {
   legalArea: string;
@@ -37,6 +39,8 @@ export const PromptBuilderForm = ({
   outputFormat,
   setOutputFormat,
 }: PromptBuilderFormProps) => {
+  const isBasicInfoMissing = !legalArea || !taskType;
+
   return (
     <Card className="card-gradient">
       <CardHeader>
@@ -48,6 +52,15 @@ export const PromptBuilderForm = ({
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {isBasicInfoMissing && (
+          <Alert className="bg-amber-50 border-amber-200">
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <AlertDescription>
+              Select at least Legal Area and Task Type to auto-generate a prompt
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <BasicInfoSelectors 
           legalArea={legalArea}
           setLegalArea={setLegalArea}

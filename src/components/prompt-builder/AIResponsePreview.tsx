@@ -4,6 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Loader2, AlertTriangle, Copy, Save } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface AIResponsePreviewProps {
   aiResponse: string;
@@ -22,6 +33,8 @@ export const AIResponsePreview = ({
 }: AIResponsePreviewProps) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [templateTitle, setTemplateTitle] = useState("");
   
   if (!aiResponse && !isLoading && !error) return null;
   
@@ -36,6 +49,24 @@ export const AIResponsePreview = ({
     });
     
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSaveTemplate = () => {
+    if (onSaveResponse && templateTitle.trim()) {
+      onSaveResponse(templateTitle);
+      setSaveDialogOpen(false);
+      setTemplateTitle("");
+      toast({
+        title: "Template Saved",
+        description: "Your response has been saved as a template"
+      });
+    } else {
+      toast({
+        title: "Title Required",
+        description: "Please enter a title for your template",
+        variant: "destructive"
+      });
+    }
   };
   
   return (
@@ -79,11 +110,44 @@ export const AIResponsePreview = ({
                   <Copy className="h-4 w-4 mr-1" />
                   {copied ? "Copied" : "Copy Response"}
                 </Button>
+                
                 {onSaveResponse && (
-                  <Button size="sm" variant="outline" onClick={() => onSaveResponse(aiResponse)}>
-                    <Save className="h-4 w-4 mr-1" />
-                    Save to Templates
-                  </Button>
+                  <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">
+                        <Save className="h-4 w-4 mr-1" />
+                        Save to Templates
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Save as Template</DialogTitle>
+                        <DialogDescription>
+                          Enter a title for this template to save it to your library.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="template-title" className="text-right">
+                            Title
+                          </Label>
+                          <Input
+                            id="template-title"
+                            value={templateTitle}
+                            onChange={(e) => setTemplateTitle(e.target.value)}
+                            className="col-span-3"
+                            placeholder="E.g., Contract Review Template"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handleSaveTemplate}>Save Template</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 )}
               </div>
             </>

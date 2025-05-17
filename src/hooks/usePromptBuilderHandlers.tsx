@@ -46,7 +46,7 @@ export function usePromptBuilderHandlers({
   outputFormat
 }: UsePromptBuilderHandlersProps) {
   const { toast } = useToast();
-  const { generateWithOpenAI, isLoading, error } = useOpenAiApi();
+  const { generateWithOpenAI, chatWithOpenAI, isLoading, error } = useOpenAiApi();
 
   const handleCopyPrompt = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -101,15 +101,22 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
 
     setGeneratedPrompt(generatedPrompt);
     
-    // Call OpenAI API
+    // Call OpenAI API to generate response based on the prompt
     setIsGeneratingResponse(true);
     
     try {
       const systemPrompt = `You are an expert legal assistant specializing in ${legalArea} law. You're helping with a ${taskType} task. Provide a detailed, professional response that would be useful for a legal professional.`;
       
-      const fullPrompt = `${systemPrompt}\n\nHere is the request:\n${generatedPrompt}`;
-      
-      const response = await generateWithOpenAI(fullPrompt, {
+      const response = await chatWithOpenAI([
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: generatedPrompt
+        }
+      ], {
         temperature: 0.7,
         maxTokens: 800
       });
@@ -117,8 +124,8 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       if (response) {
         setAiResponse(response);
         toast({
-          title: "Prompt Generated",
-          description: "Your legal prompt has been generated with OpenAI API."
+          title: "Response Generated",
+          description: "OpenAI has generated a response based on your prompt."
         });
       } else {
         setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
@@ -142,24 +149,36 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
   };
 
   const handleCustomPromptSubmit = async (promptText: string) => {
+    // Update the generated prompt to the custom one
     setGeneratedPrompt(promptText);
     
-    // Call OpenAI API
+    // Call OpenAI API with the custom prompt
     setIsGeneratingResponse(true);
     
     try {
       // Add legal context to the prompt if legalArea or taskType is selected
-      let fullPrompt = promptText;
+      let systemMessage = "You are a helpful legal assistant.";
       
-      if (legalArea || taskType) {
-        const contextInfo = [];
-        if (legalArea) contextInfo.push(`Legal Area: ${legalArea}`);
-        if (taskType) contextInfo.push(`Task Type: ${taskType}`);
-        
-        fullPrompt = `[${contextInfo.join(', ')}]\n\n${promptText}`;
+      if (legalArea) {
+        systemMessage = `You are an expert legal assistant specializing in ${legalArea} law.`;
       }
       
-      const response = await generateWithOpenAI(fullPrompt, {
+      if (taskType) {
+        systemMessage += ` You're helping with a ${taskType} task.`;
+      }
+      
+      systemMessage += " Provide a detailed, professional response that would be useful for a legal professional.";
+      
+      const response = await chatWithOpenAI([
+        {
+          role: "system",
+          content: systemMessage
+        },
+        {
+          role: "user",
+          content: promptText
+        }
+      ], {
         temperature: 0.7,
         maxTokens: 800
       });
@@ -167,8 +186,8 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       if (response) {
         setAiResponse(response);
         toast({
-          title: "Custom Prompt Processed",
-          description: "Your prompt has been processed with OpenAI."
+          title: "Response Generated",
+          description: "OpenAI has generated a response based on your prompt."
         });
       } else {
         setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
@@ -203,12 +222,26 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
     try {
       const systemPrompt = `You are an expert legal assistant specializing in ${template.legalArea} law. You're helping with a ${template.taskType} task for the template titled "${template.title}". Provide a detailed, professional response that would be useful for a legal professional.`;
       
-      const fullPrompt = `${systemPrompt}\n\nHere is the request:\n${template.template}`;
-      
-      const response = await generateWithOpenAI(fullPrompt);
+      const response = await chatWithOpenAI([
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: template.template
+        }
+      ], {
+        temperature: 0.7,
+        maxTokens: 800
+      });
       
       if (response) {
         setAiResponse(response);
+        toast({
+          title: "Response Generated",
+          description: "OpenAI has generated a response based on the selected template."
+        });
       } else {
         setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
         toast({
@@ -288,10 +321,10 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
     
     try {
       // Create a system prompt for OpenAI API to improve the prompt
-      let improvementInstructions = "You are an expert at creating effective prompts for AI language models. Your task is to improve the following prompt";
+      let improvementInstructions = "You are an expert at creating effective prompts for AI language models. Your task is to improve the following legal prompt";
       
       if (improvements.includes("auto-technique")) {
-        improvementInstructions += ", selecting the most appropriate prompting technique for this specific task";
+        improvementInstructions += ", selecting the most appropriate prompting technique for this specific legal task";
       }
       
       if (improvements.includes("xml-tags")) {
@@ -299,7 +332,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       }
       
       if (improvements.includes("clarity")) {
-        improvementInstructions += ", enhancing clarity and precision";
+        improvementInstructions += ", enhancing clarity and precision in legal language";
       }
       
       if (improvements.includes("legal-context")) {
@@ -308,17 +341,35 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       
       improvementInstructions += ". Return ONLY the improved prompt text without any explanations or additional text.";
       
-      const fullPrompt = `${improvementInstructions}\n\nOriginal prompt:\n${generatedPrompt}`;
+      const response = await chatWithOpenAI([
+        {
+          role: "system", 
+          content: improvementInstructions
+        },
+        {
+          role: "user",
+          content: generatedPrompt
+        }
+      ], { 
+        temperature: 0.7 
+      });
       
-      // Get improved prompt from OpenAI API
-      const improvedPrompt = await generateWithOpenAI(fullPrompt, { temperature: 0.7 });
-      
-      if (improvedPrompt) {
-        setGeneratedPrompt(improvedPrompt);
+      if (response) {
+        setGeneratedPrompt(response);
         
         // Generate a new AI response for the improved prompt
-        const responsePrompt = `You are a legal expert in ${legalArea || "various fields of law"}. Respond to this request:\n\n${improvedPrompt}`;
-        const improvedResponse = await generateWithOpenAI(responsePrompt, { temperature: 0.7 });
+        const improvedResponse = await chatWithOpenAI([
+          {
+            role: "system",
+            content: `You are a legal expert in ${legalArea || "various fields of law"}.`
+          },
+          {
+            role: "user", 
+            content: response
+          }
+        ], { 
+          temperature: 0.7 
+        });
         
         if (improvedResponse) {
           setAiResponse(improvedResponse);
