@@ -8,22 +8,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAISettings } from "@/hooks/useAISettings";
 import { Database, Key, Server } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define available AI providers and their models
 const AI_PROVIDERS = {
+  "openai": {
+    label: "OpenAI",
+    models: [
+      { id: "gpt-4o", name: "GPT-4o", description: "Most powerful model" },
+      { id: "gpt-4o-mini", name: "GPT-4o Mini", description: "Efficient model" },
+      { id: "gpt-3.5-turbo", name: "GPT-3.5 Turbo", description: "Fast and efficient" }
+    ]
+  },
   "gemini": {
     label: "Google Gemini",
     models: [
       { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", description: "Advanced generative model" },
       { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", description: "Fast and efficient model" },
       { id: "gemini-pro", name: "Gemini Pro", description: "Standard model" }
-    ]
-  },
-  "openai": {
-    label: "OpenAI",
-    models: [
-      { id: "gpt-4o", name: "GPT-4o", description: "Most powerful model" },
-      { id: "gpt-4o-mini", name: "GPT-4o Mini", description: "Efficient model" }
     ]
   },
   "anthropic": {
@@ -122,7 +124,8 @@ export function AIServices() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {Object.entries(AI_PROVIDERS).map(([providerId, provider]) => (
+          {/* Order the providers to show OpenAI first */}
+          {Object.entries(AI_PROVIDERS).sort(([a], [b]) => a === "openai" ? -1 : b === "openai" ? 1 : 0).map(([providerId, provider]) => (
             <div key={providerId} className="space-y-2">
               <Label htmlFor={`${providerId}-key`}>{provider.label} API Key</Label>
               <div className="flex gap-3">
@@ -136,17 +139,17 @@ export function AIServices() {
                 />
                 <Button onClick={() => handleSaveAPIKey(providerId)}>Save</Button>
               </div>
-              {providerId === "gemini" && (
-                <p className="text-xs text-muted-foreground">
-                  <a href="https://ai.google.dev/tutorials/setup" target="_blank" rel="noopener noreferrer" className="underline">
-                    Get a Gemini API key
-                  </a>
-                </p>
-              )}
               {providerId === "openai" && (
                 <p className="text-xs text-muted-foreground">
                   <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">
                     Get an OpenAI API key
+                  </a>
+                </p>
+              )}
+              {providerId === "gemini" && (
+                <p className="text-xs text-muted-foreground">
+                  <a href="https://ai.google.dev/tutorials/setup" target="_blank" rel="noopener noreferrer" className="underline">
+                    Get a Gemini API key
                   </a>
                 </p>
               )}

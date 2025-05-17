@@ -1,5 +1,6 @@
+
 import { useToast } from "@/hooks/use-toast";
-import { useGeminiApi } from "@/hooks/useGeminiApi";
+import { useOpenAiApi } from "@/hooks/useOpenAiApi";
 
 interface UsePromptBuilderHandlersProps {
   generatedPrompt: string;
@@ -45,7 +46,7 @@ export function usePromptBuilderHandlers({
   outputFormat
 }: UsePromptBuilderHandlersProps) {
   const { toast } = useToast();
-  const { generateWithGemini, isLoading, error } = useGeminiApi();
+  const { generateWithOpenAI, isLoading, error } = useOpenAiApi();
 
   const handleCopyPrompt = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -100,7 +101,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
 
     setGeneratedPrompt(generatedPrompt);
     
-    // Call Gemini API
+    // Call OpenAI API
     setIsGeneratingResponse(true);
     
     try {
@@ -108,7 +109,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       
       const fullPrompt = `${systemPrompt}\n\nHere is the request:\n${generatedPrompt}`;
       
-      const response = await generateWithGemini(fullPrompt, {
+      const response = await generateWithOpenAI(fullPrompt, {
         temperature: 0.7,
         maxTokens: 800
       });
@@ -117,22 +118,22 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
         setAiResponse(response);
         toast({
           title: "Prompt Generated",
-          description: "Your legal prompt has been generated with Gemini API."
+          description: "Your legal prompt has been generated with OpenAI API."
         });
       } else {
-        setAiResponse("Sorry, there was an error generating a response with Gemini AI. Please try again later.");
+        setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
         toast({
           title: "Error",
-          description: "Failed to generate response with Gemini AI.",
+          description: "Failed to generate response with OpenAI.",
           variant: "destructive"
         });
       }
     } catch (err) {
       console.error("Error generating response:", err);
-      setAiResponse("Sorry, there was an error generating a response with Gemini AI. Please try again later.");
+      setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
       toast({
         title: "Error",
-        description: "Failed to generate response with Gemini AI.",
+        description: "Failed to generate response with OpenAI.",
         variant: "destructive"
       });
     } finally {
@@ -143,7 +144,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
   const handleCustomPromptSubmit = async (promptText: string) => {
     setGeneratedPrompt(promptText);
     
-    // Call Gemini API
+    // Call OpenAI API
     setIsGeneratingResponse(true);
     
     try {
@@ -158,7 +159,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
         fullPrompt = `[${contextInfo.join(', ')}]\n\n${promptText}`;
       }
       
-      const response = await generateWithGemini(fullPrompt, {
+      const response = await generateWithOpenAI(fullPrompt, {
         temperature: 0.7,
         maxTokens: 800
       });
@@ -167,22 +168,22 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
         setAiResponse(response);
         toast({
           title: "Custom Prompt Processed",
-          description: "Your prompt has been processed with Gemini AI."
+          description: "Your prompt has been processed with OpenAI."
         });
       } else {
-        setAiResponse("Sorry, there was an error generating a response with Gemini AI. Please try again later.");
+        setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
         toast({
           title: "Error",
-          description: "Failed to process prompt with Gemini AI.",
+          description: "Failed to process prompt with OpenAI.",
           variant: "destructive"
         });
       }
     } catch (err) {
       console.error("Error processing custom prompt:", err);
-      setAiResponse("Sorry, there was an error generating a response with Gemini AI. Please try again later.");
+      setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
       toast({
         title: "Error",
-        description: "Failed to process custom prompt with Gemini AI.",
+        description: "Failed to process custom prompt with OpenAI.",
         variant: "destructive"
       });
     } finally {
@@ -196,7 +197,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
     setLegalArea(template.legalArea);
     setTaskType(template.taskType);
     
-    // Call Gemini API
+    // Call OpenAI API
     setIsGeneratingResponse(true);
     
     try {
@@ -204,26 +205,26 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       
       const fullPrompt = `${systemPrompt}\n\nHere is the request:\n${template.template}`;
       
-      const response = await generateWithGemini(fullPrompt);
+      const response = await generateWithOpenAI(fullPrompt);
       
       if (response) {
         setAiResponse(response);
       } else {
-        setAiResponse("Sorry, there was an error generating a response with Gemini AI. Please try again later.");
+        setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
         toast({
           title: "Error",
-          description: "Failed to generate response for template with Gemini AI.",
+          description: "Failed to generate response for template with OpenAI.",
           variant: "destructive"
         });
       }
     } catch (err) {
       console.error("Error generating response for template:", err);
-      setAiResponse("Sorry, there was an error generating a response with Gemini AI. Please try again later.");
+      setAiResponse("Sorry, there was an error generating a response with OpenAI. Please try again later.");
       toast({
         title: "Error",
-        description: "Failed to generate response for template with Gemini AI.",
+        description: "Failed to generate response for template with OpenAI.",
         variant: "destructive"
-      });
+        });
     } finally {
       setIsGeneratingResponse(false);
     }
@@ -286,7 +287,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
     setIsGeneratingResponse(true);
     
     try {
-      // Create a system prompt for Gemini API to improve the prompt
+      // Create a system prompt for OpenAI API to improve the prompt
       let improvementInstructions = "You are an expert at creating effective prompts for AI language models. Your task is to improve the following prompt";
       
       if (improvements.includes("auto-technique")) {
@@ -309,15 +310,15 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       
       const fullPrompt = `${improvementInstructions}\n\nOriginal prompt:\n${generatedPrompt}`;
       
-      // Get improved prompt from Gemini API
-      const improvedPrompt = await generateWithGemini(fullPrompt, { temperature: 0.7 });
+      // Get improved prompt from OpenAI API
+      const improvedPrompt = await generateWithOpenAI(fullPrompt, { temperature: 0.7 });
       
       if (improvedPrompt) {
         setGeneratedPrompt(improvedPrompt);
         
         // Generate a new AI response for the improved prompt
         const responsePrompt = `You are a legal expert in ${legalArea || "various fields of law"}. Respond to this request:\n\n${improvedPrompt}`;
-        const improvedResponse = await generateWithGemini(responsePrompt, { temperature: 0.7 });
+        const improvedResponse = await generateWithOpenAI(responsePrompt, { temperature: 0.7 });
         
         if (improvedResponse) {
           setAiResponse(improvedResponse);
@@ -325,12 +326,12 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
         
         toast({
           title: "Prompt Improved",
-          description: `Applied ${improvements.length} improvement(s) to your prompt using Gemini AI.`
+          description: `Applied ${improvements.length} improvement(s) to your prompt using OpenAI.`
         });
       } else {
         toast({
           title: "Error",
-          description: "Failed to improve prompt with Gemini AI.",
+          description: "Failed to improve prompt with OpenAI.",
           variant: "destructive"
         });
       }
@@ -338,7 +339,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       console.error("Error improving prompt:", err);
       toast({
         title: "Error",
-        description: "Failed to improve prompt with Gemini AI.",
+        description: "Failed to improve prompt with OpenAI.",
         variant: "destructive"
       });
     } finally {

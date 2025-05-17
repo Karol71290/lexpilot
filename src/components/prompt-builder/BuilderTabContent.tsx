@@ -8,7 +8,7 @@ import { PopularTemplates } from "./PopularTemplates";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { ImprovementOptions } from "./form-components/ImprovementOptions";
-import { useGeminiApi } from "@/hooks/useGeminiApi";
+import { useOpenAiApi } from "@/hooks/useOpenAiApi";
 
 interface BuilderTabContentProps {
   legalArea: string;
@@ -76,7 +76,7 @@ export const BuilderTabContent = ({
   handleTemplateSelect
 }: BuilderTabContentProps) => {
   const [promptText, setPromptText] = useState("");
-  const { error } = useGeminiApi();
+  const { error } = useOpenAiApi();
   
   const handleGenerateWithAI = () => {
     if (promptText.trim()) {
@@ -154,7 +154,7 @@ export const BuilderTabContent = ({
           <AIResponsePreview 
             aiResponse={aiResponse} 
             isLoading={isGeneratingResponse}
-            provider="Google Gemini"
+            provider="OpenAI"
           />
         </div>
       </div>

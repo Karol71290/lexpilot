@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 
 // Define types for our hook
-type AIProvider = "gemini" | "openai" | "anthropic";
+type AIProvider = "openai" | "gemini" | "anthropic";
 type ApiKeys = Record<AIProvider, string>;
 type ConnectionStatus = { success: boolean; message: string } | null;
 
@@ -91,6 +91,23 @@ export function useAISettings() {
           setConnectionStatus(result);
           return result;
         }
+      }
+      
+      // For OpenAI API, use our new edge function
+      if (selectedProvider === "openai") {
+        const response = await supabase.functions.invoke("test-openai-connection", {
+          body: { apiKey, model: selectedModel }
+        });
+        
+        if (response.error) {
+          const result = { success: false, message: response.error.message || "Connection failed" };
+          setConnectionStatus(result);
+          return result;
+        }
+        
+        const result = { success: true, message: "Connection successful" };
+        setConnectionStatus(result);
+        return result;
       }
       
       // This is just a mock test for other providers
