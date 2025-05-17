@@ -7,20 +7,20 @@ export function useWorkflowPrompts() {
   
   // Define persona-specific preferences for adapting prompts
   const personaPreferences = {
-    detailLevel: userPersona === 'Skeptical' ? 'high' : 
-                 userPersona === 'Progressive' ? 'medium' : 'low',
+    detailLevel: userPersona === 'skeptical' ? 'high' : 
+                 userPersona === 'innovator' ? 'medium' : 'low',
     
-    legalJargon: userPersona === 'Traditional' ? 'high' : 
-                 userPersona === 'Analytical' ? 'medium' : 'low',
+    legalJargon: userPersona === 'veteran' ? 'high' : 
+                 userPersona === 'practitioner' ? 'medium' : 'low',
     
-    simplification: userPersona === 'Skeptical' ? 'low' : 
-                    userPersona === 'Progressive' ? 'high' : 'medium',
+    simplification: userPersona === 'skeptical' ? 'low' : 
+                    userPersona === 'evangelist' ? 'high' : 'medium',
                    
-    riskProfile: userPersona === 'Skeptical' ? 'low' : 
-                 userPersona === 'Progressive' ? 'high' : 'medium',
+    riskProfile: userPersona === 'skeptical' ? 'low' : 
+                 userPersona === 'innovator' ? 'high' : 'medium',
                  
-    explanationDepth: userPersona === 'Analytical' ? 'high' : 
-                      userPersona === 'Traditional' ? 'medium' : 'low',
+    explanationDepth: userPersona === 'practitioner' ? 'high' : 
+                      userPersona === 'veteran' ? 'medium' : 'low',
   };
 
   // Function to adapt prompts based on user persona
@@ -28,13 +28,13 @@ export function useWorkflowPrompts() {
     // Prepare a custom instruction based on persona
     let personaInstruction = "";
     
-    if (userPersona === 'Skeptical') {
+    if (userPersona === 'skeptical') {
       personaInstruction = "Focus on identifying risks and potential problems. Be conservative in your analysis and highlight all potential issues, even minor ones. Provide detailed references to specific legal standards where applicable.";
-    } else if (userPersona === 'Progressive') {
+    } else if (userPersona === 'innovator') {
       personaInstruction = "Focus on innovative approaches and solutions. Be practical and business-friendly in your analysis. Use straightforward language and emphasize actionable insights.";
-    } else if (userPersona === 'Traditional') {
+    } else if (userPersona === 'veteran') {
       personaInstruction = "Follow established legal conventions and formats. Be thorough and formal in your analysis. Use appropriate legal terminology and provide structured, methodical responses.";
-    } else if (userPersona === 'Analytical') {
+    } else if (userPersona === 'practitioner') {
       personaInstruction = "Provide data-driven analysis when possible. Break down complex issues into clear components. Balance legal detail with practical implications and quantify risks where possible.";
     } else {
       personaInstruction = "Provide a balanced analysis with practical insights.";
