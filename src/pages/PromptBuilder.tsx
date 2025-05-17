@@ -25,7 +25,11 @@ const PromptBuilder = () => {
     taskType: state.taskType,
     setTaskType: state.setTaskType,
     promptTechnique: state.promptTechnique,
-    setPromptTechnique: state.setPromptTechnique
+    setPromptTechnique: state.setPromptTechnique,
+    context: state.context,
+    jurisdiction: state.jurisdiction,
+    tone: state.tone,
+    outputFormat: state.outputFormat
   });
 
   return (

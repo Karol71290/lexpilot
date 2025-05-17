@@ -1,4 +1,3 @@
-
 import { useToast } from "@/hooks/use-toast";
 
 interface UsePromptBuilderHandlersProps {
@@ -17,6 +16,10 @@ interface UsePromptBuilderHandlersProps {
   setTaskType: (type: string) => void;
   promptTechnique: string;
   setPromptTechnique: (technique: string) => void;
+  context: string;
+  jurisdiction: string;
+  tone: string;
+  outputFormat: string;
 }
 
 export function usePromptBuilderHandlers({
@@ -34,7 +37,11 @@ export function usePromptBuilderHandlers({
   taskType,
   setTaskType,
   promptTechnique,
-  setPromptTechnique
+  setPromptTechnique,
+  context,
+  jurisdiction,
+  tone,
+  outputFormat
 }: UsePromptBuilderHandlersProps) {
   const { toast } = useToast();
 
