@@ -49,6 +49,7 @@ export const ImprovementOptions = ({
 }: ImprovementOptionsProps) => {
   const { toast } = useToast();
   const [selectedImprovements, setSelectedImprovements] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
   
   const toggleImprovement = (id: string) => {
     setSelectedImprovements(current => 
@@ -70,12 +71,18 @@ export const ImprovementOptions = ({
     
     onImproveWithAI(selectedImprovements);
     setSelectedImprovements([]);
+    setOpen(false); // Close popover after applying
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant={variant} className="w-full sm:w-auto" disabled={disabled}>
+        <Button 
+          variant={variant} 
+          className="w-full sm:w-auto" 
+          disabled={disabled}
+          onClick={() => !disabled && setOpen(true)}
+        >
           <Wand2 className="mr-2 h-4 w-4" />
           {label}
         </Button>
