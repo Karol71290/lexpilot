@@ -6,8 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
-import { Loader2, Download, Info } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Loader2, Download, Info, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useOpenAiApi } from "@/hooks/useOpenAiApi";
 import { 
   Tooltip,
@@ -15,6 +15,10 @@ import {
   TooltipProvider,
   TooltipTrigger 
 } from "@/components/ui/tooltip";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useUserPersona } from "@/hooks/useUserPersona";
+import { getPersonaPolicyPreferences, getPersonaName, getPersonaPolicyImpact } from "@/utils/personaUtils";
+import { Badge } from "@/components/ui/badge";
 
 // Regulatory frameworks data
 const regulatoryFrameworks = {
@@ -78,6 +82,25 @@ export default function AIUsePolicyGenerator() {
   // Get OpenAI API integration
   const { generateWithOpenAI, isLoading, error } = useOpenAiApi();
   
+  // Get the user's persona
+  const { userPersona, isLoading: isLoadingPersona } = useUserPersona();
+  
+  // Effect to adjust strictness based on persona when component loads
+  useEffect(() => {
+    if (userPersona && !isLoadingPersona) {
+      const personaPreferences = getPersonaPolicyPreferences(userPersona);
+      
+      // Map persona policy tone to strictness level
+      if (personaPreferences.policyTone === 'conservative') {
+        setStrictness('strict');
+      } else if (personaPreferences.policyTone === 'balanced') {
+        setStrictness('balanced');
+      } else if (personaPreferences.policyTone === 'progressive') {
+        setStrictness('permissive');
+      }
+    }
+  }, [userPersona, isLoadingPersona]);
+  
   // Function to get regulatory framework information
   const getFrameworkInfo = (jurisdictionKey: string) => {
     return regulatoryFrameworks[jurisdictionKey as keyof typeof regulatoryFrameworks] || 
@@ -92,6 +115,11 @@ export default function AIUsePolicyGenerator() {
       const frameworkType = framework.status === "active" ? 
         "regulatory framework" : "best practices";
       
+      // Get persona-specific policy preferences
+      const personaPreferences = getPersonaPolicyPreferences(userPersona);
+      const personaName = getPersonaName(userPersona);
+      
+      // Build a prompt that incorporates the persona preferences
       const promptContent = `
         Generate a comprehensive AI use policy for a ${industry} organization operating in the ${jurisdiction} jurisdiction.
         
@@ -101,12 +129,21 @@ export default function AIUsePolicyGenerator() {
         Industry: ${industry}
         Regulatory framework: ${framework.name} (${frameworkType})
         
+        User Persona: ${personaName}
+        Risk profile: ${personaPreferences.riskProfile}
+        Innovation level: ${personaPreferences.innovationLevel}
+        
+        Tailor the policy to reflect:
+        - Governance focus level: ${personaPreferences.governanceFocus}/10
+        - Compliance emphasis level: ${personaPreferences.complianceEmphasis}/10
+        - Disclaimer detail level: ${personaPreferences.disclaimerLevel}/10
+        
         Special requirements: ${specialRequirements}
         
         The policy should:
         1. Comply with ${framework.name} requirements and standards
         2. Include specific provisions relevant to the ${industry} sector
-        3. Match the requested ${strictness} strictness level
+        3. Match the requested ${strictness} strictness level WHILE ALSO reflecting the persona characteristics
         4. Address the special requirements mentioned above (if any)
         5. Be structured with clear sections including Purpose, Scope, Guidelines, etc.
         6. Include appropriate disclaimers stating this is a suggested starting point, not formal legal advice
@@ -168,6 +205,16 @@ export default function AIUsePolicyGenerator() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {!isLoadingPersona && (
+              <Alert className="mb-6">
+                <CheckCircle2 className="h-4 w-4" />
+                <AlertTitle>Persona-Tailored Policy</AlertTitle>
+                <AlertDescription>
+                  {getPersonaPolicyImpact(userPersona)}
+                </AlertDescription>
+              </Alert>
+            )}
+          
             <Tabs value={selectedTab} onValueChange={setSelectedTab}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="generate">Generate Policy</TabsTrigger>
@@ -176,6 +223,24 @@ export default function AIUsePolicyGenerator() {
               
               <TabsContent value="generate" className="space-y-6 mt-4">
                 <div className="space-y-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    {!isLoadingPersona && (
+                      <Badge variant="outline" className="bg-muted">
+                        Persona: {getPersonaName(userPersona)}
+                      </Badge>
+                    )}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs">Your AI adoption persona influences the policy's tone, risk sensitivity, and compliance focus</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center">
@@ -256,8 +321,20 @@ export default function AIUsePolicyGenerator() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="policy-strictness">Policy Strictness</Label>
-                      <Select defaultValue={strictness} onValueChange={setStrictness}>
+                      <div className="flex items-center">
+                        <Label htmlFor="policy-strictness" className="mr-2">Policy Strictness</Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs">This is pre-set based on your persona but can be adjusted</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      <Select value={strictness} onValueChange={setStrictness}>
                         <SelectTrigger id="policy-strictness">
                           <SelectValue placeholder="Select strictness level" />
                         </SelectTrigger>
