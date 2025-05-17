@@ -109,6 +109,11 @@ export default function Welcome() {
   const completeSetup = () => {
     setIsComplete(true);
     
+    // Mark onboarding as complete in localStorage
+    localStorage.setItem("hasCompletedWelcome", "true");
+    // Dispatch storage event for other tabs/components
+    window.dispatchEvent(new Event("storage"));
+    
     // Automatically redirect after showing the completion message
     setTimeout(() => {
       navigate("/");
