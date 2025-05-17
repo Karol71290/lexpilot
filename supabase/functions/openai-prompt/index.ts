@@ -8,7 +8,7 @@ const corsHeaders = {
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
-// Get the API key from environment variables
+// Get the API key from environment variables - no fallback, we expect it to be set
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
 serve(async (req) => {
@@ -20,7 +20,7 @@ serve(async (req) => {
   try {
     const { 
       prompt, 
-      model = "gpt-4o", 
+      model = "gpt-4", // Use gpt-4 as the default model
       temperature = 0.7, 
       maxTokens = 800
     } = await req.json();

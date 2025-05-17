@@ -29,7 +29,7 @@ export const AIResponsePreview = ({
           </div>
           {provider && (
             <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-              Powered by {provider}
+              Powered by {provider} API
             </span>
           )}
         </div>

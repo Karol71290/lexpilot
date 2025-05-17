@@ -15,53 +15,27 @@ export function useGeminiApi() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Get the API key and model from localStorage
-  const getApiConfig = () => {
-    // Try to get API key from localStorage first
-    const savedApiKeys = localStorage.getItem("ai_api_keys");
-    let apiKey = "";
-    
-    if (savedApiKeys) {
-      try {
-        const keys = JSON.parse(savedApiKeys);
-        apiKey = keys.gemini || "";
-      } catch (e) {
-        console.error("Failed to parse saved API keys:", e);
-      }
-    }
-    
-    // Try to get selected model from localStorage
-    const savedProvider = localStorage.getItem("ai_selected_provider");
-    const savedModel = localStorage.getItem("ai_selected_model");
-    const useLocalModel = savedProvider === "gemini" && savedModel;
-    
-    return {
-      apiKey,
-      model: useLocalModel ? savedModel : "gemini-1.5-pro" // Default to gemini-1.5-pro if no model is selected
-    };
-  };
-
   const generateWithGemini = async (prompt: string, options: GeminiOptions = {}) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const { apiKey, model } = getApiConfig();
+      // Default to gemini-1.5-pro model
+      const model = options.model || "gemini-1.5-pro";
       
       // Wrap Supabase API call in try-catch to handle edge function errors properly
       let response;
       try {
         console.log("Calling Gemini with prompt:", prompt.substring(0, 50) + "...");
-        console.log("Using model:", options.model || model);
+        console.log("Using model:", model);
         
         response = await supabase.functions.invoke("gemini-prompt", {
           body: {
             prompt,
-            model: options.model || model,
+            model: model,
             temperature: options.temperature || 0.7,
             topK: options.topK || 32,
-            maxTokens: options.maxTokens || 800,
-            apiKey: apiKey // Pass the API key from localStorage if available
+            maxTokens: options.maxTokens || 800
           },
         });
       } catch (e) {
@@ -77,7 +51,7 @@ export function useGeminiApi() {
         // Show a more user-friendly toast message
         toast({
           title: "AI Service Error",
-          description: "There was an issue connecting to the Gemini AI service. Please check your API key in Settings → AI Services.",
+          description: "There was an issue connecting to the Gemini AI service.",
           variant: "destructive"
         });
         
@@ -97,7 +71,7 @@ export function useGeminiApi() {
       // Show toast for unexpected errors
       toast({
         title: "Connection Error",
-        description: "Failed to connect to the AI service. Please check your API key in Settings → AI Services.",
+        description: "Failed to connect to the AI service.",
         variant: "destructive"
       });
       

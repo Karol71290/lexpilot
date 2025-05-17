@@ -128,7 +128,7 @@ export const BuilderTabContent = ({
               disabled={isGeneratingResponse || (!promptText.trim() && !legalArea && !taskType)}
             >
               <Sparkles className="h-4 w-4 mr-2" />
-              Generate Prompt with AI
+              Generate with OpenAI
             </Button>
             
             <ImprovementOptions 
@@ -170,4 +170,4 @@ export const BuilderTabContent = ({
       </div>
     </div>
   );
-};
+}

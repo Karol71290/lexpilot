@@ -14,35 +14,24 @@ export function useOpenAiApi() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Get the model from localStorage
-  const getApiConfig = () => {
-    // Try to get selected model from localStorage
-    const savedProvider = localStorage.getItem("ai_selected_provider");
-    const savedModel = localStorage.getItem("ai_selected_model");
-    const useLocalModel = savedProvider === "openai" && savedModel;
-    
-    return {
-      model: useLocalModel ? savedModel : "gpt-4o" // Default to GPT-4o if no model is selected
-    };
-  };
-
   const generateWithOpenAI = async (prompt: string, options: OpenAIOptions = {}) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const { model } = getApiConfig();
+      // Default to GPT-4 model
+      const model = options.model || "gpt-4";
       
       // Wrap Supabase API call in try-catch to handle edge function errors properly
       let response;
       try {
         console.log("Calling OpenAI with prompt:", prompt.substring(0, 50) + "...");
-        console.log("Using model:", options.model || model);
+        console.log("Using model:", model);
         
         response = await supabase.functions.invoke("openai-prompt", {
           body: {
             prompt,
-            model: options.model || model,
+            model: model,
             temperature: options.temperature || 0.7,
             maxTokens: options.maxTokens || 800
           },
@@ -60,7 +49,7 @@ export function useOpenAiApi() {
         // Show a more user-friendly toast message
         toast({
           title: "AI Service Error",
-          description: "There was an issue connecting to the OpenAI service. Please check if the OpenAI API key is configured properly.",
+          description: "There was an issue connecting to the OpenAI service.",
           variant: "destructive"
         });
         
@@ -80,7 +69,7 @@ export function useOpenAiApi() {
       // Show toast for unexpected errors
       toast({
         title: "Connection Error",
-        description: "Failed to connect to the AI service. Please make sure the OpenAI API key is configured properly.",
+        description: "Failed to connect to the AI service.",
         variant: "destructive"
       });
       

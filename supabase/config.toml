@@ -3,3 +3,7 @@ project_id = "kvshgdkzafqvaubcgmic"
 
 [functions.gemini-prompt]
 verify_jwt = true
+
+[functions.openai-prompt]
+verify_jwt = true
+
