@@ -15,6 +15,7 @@ import { PopularTemplates } from "@/components/prompt-builder/PopularTemplates";
 import { GeneratedPrompt } from "@/components/prompt-builder/GeneratedPrompt";
 import { AIResponsePreview } from "@/components/prompt-builder/AIResponsePreview";
 import { PromptTemplateList } from "@/components/prompt-builder/PromptTemplateList";
+import { FreeformPromptInput } from "@/components/prompt-builder/FreeformPromptInput";
 
 const PromptBuilder = () => {
   const { toast } = useToast();
@@ -116,6 +117,34 @@ For this ${taskType} in ${legalArea} law, here's a ${outputFormat ? outputFormat
     }, 1500);
   };
 
+  const handleCustomPromptSubmit = (promptText: string) => {
+    setGeneratedPrompt(promptText);
+    
+    // Clear form fields since we're using a custom prompt
+    setLegalArea("");
+    setTaskType("");
+    
+    // In a real application, this would call an AI API
+    setIsGeneratingResponse(true);
+    setTimeout(() => {
+      const mockAIResponse = `This is a simulated AI response based on your custom prompt. In a real implementation, this would call an API to generate a response.
+
+1. Analysis of your specific legal query
+2. Relevant legal principles and precedents
+3. Key considerations for this situation
+4. Practical recommendations
+5. Additional resources for further reference`;
+
+      setAiResponse(mockAIResponse);
+      setIsGeneratingResponse(false);
+      
+      toast({
+        title: "Custom Prompt Submitted",
+        description: "Your custom prompt has been processed."
+      });
+    }, 1500);
+  };
+
   const handleTemplateSelect = (template: any) => {
     setSelectedTemplate(template.id);
     setGeneratedPrompt(template.template);
@@ -165,10 +194,10 @@ For a ${template.taskType} in ${template.legalArea}, here's a professional respo
     const newTemplate = {
       id: nextTemplateId.toString(),
       title: title,
-      description: `Custom template for ${legalArea} ${taskType}`,
-      category: legalArea,
-      legalArea: legalArea,
-      taskType: taskType,
+      description: `Custom template for ${legalArea || "general use"}`,
+      category: legalArea || "General",
+      legalArea: legalArea || "",
+      taskType: taskType || "Custom",
       persona: ["Strategic Adopter", "Pragmatic User"],
       role: ["Associate", "Partner"],
       template: generatedPrompt
@@ -188,7 +217,7 @@ For a ${template.taskType} in ${template.legalArea}, here's a professional respo
     if (!generatedPrompt) {
       toast({
         title: "No Prompt to Improve",
-        description: "Please generate a prompt before applying improvements.",
+        description: "Please generate or submit a prompt before applying improvements.",
         variant: "destructive"
       });
       return;
@@ -214,10 +243,14 @@ For a ${template.taskType} in ${template.legalArea}, here's a professional respo
             /Follow a chain of thought approach to solve this step by step\./g,
             "After providing an initial response, critique your answer and provide an improved version."
           );
+        } else {
+          // For custom prompts or other tasks
+          improvedPrompt = "Let me solve this step by step while exploring multiple perspectives.\n\n" + improvedPrompt;
         }
       }
       
       if (improvements.includes("xml-tags")) {
+        // Add XML tags
         improvedPrompt = improvedPrompt.replace(
           /Context\/Background information: (.*?)(?=\n|$)/g,
           '<context>$1</context>'
@@ -230,10 +263,11 @@ For a ${template.taskType} in ${template.legalArea}, here's a professional respo
           /Please format your response as: (.*?)(?=\n|$)/g,
           '<format>$1</format>'
         );
-        improvedPrompt = improvedPrompt.replace(
-          /As a legal professional with expertise in (.*?), I need assistance with the following (.*?) task:/g,
-          'As a legal professional with expertise in <area>$1</area>, I need assistance with the following <task>$2</task> task:'
-        );
+        
+        // For custom prompts that may not have the standard format
+        if (!improvedPrompt.includes('<context>') && !improvedPrompt.includes('<jurisdiction>') && !improvedPrompt.includes('<format>')) {
+          improvedPrompt = `<instruction>\n${improvedPrompt}\n</instruction>`;
+        }
       }
       
       if (improvements.includes("clarity")) {
@@ -251,6 +285,9 @@ For a ${template.taskType} in ${template.legalArea}, here's a professional respo
           legalContext += "\nConsider procedural rules, evidentiary standards, and potential alternative dispute resolution options where appropriate.";
         } else if (legalArea === "IP Law") {
           legalContext += "\nConsider relevant IP protection regimes (patent, trademark, copyright, trade secret), their distinct requirements, and jurisdictional differences in protection scope.";
+        } else {
+          // For custom prompts or other legal areas
+          legalContext += "\nEnsure your analysis considers relevant statutes, regulations, case law, and jurisdictional differences that may impact the legal analysis or advice.";
         }
         
         improvedPrompt += legalContext;
@@ -261,7 +298,7 @@ For a ${template.taskType} in ${template.legalArea}, here's a professional respo
       // Generate a new AI response for the improved prompt
       const mockImprovedResponse = `This is a simulated AI response based on your improved prompt.
 
-For this enhanced ${taskType} in ${legalArea} law, here's a comprehensive ${outputFormat ? outputFormat : "response"} with improved structure and depth:
+For this enhanced ${taskType ? `${taskType} in ${legalArea} law` : "legal analysis"}, here's a comprehensive ${outputFormat ? outputFormat : "response"} with improved structure and depth:
 
 1. Primary legal consideration: [Detailed analysis with specific case law references]
 2. Secondary considerations: [Multiple approaches examined with comparative analysis]
@@ -308,6 +345,12 @@ For this enhanced ${taskType} in ${legalArea} law, here's a comprehensive ${outp
           <TabsContent value="builder" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
+                {/* Freeform Prompt Input */}
+                <FreeformPromptInput 
+                  onSubmitPrompt={handleCustomPromptSubmit}
+                  onImproveWithAI={handleImproveWithAI}
+                />
+                
                 {/* Prompt Builder Form */}
                 <PromptBuilderForm
                   legalArea={legalArea}

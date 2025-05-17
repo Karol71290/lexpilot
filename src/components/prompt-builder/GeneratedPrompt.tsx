@@ -38,7 +38,7 @@ export const GeneratedPrompt = ({
   if (!generatedPrompt) return null;
   
   const handleSavePrompt = () => {
-    const title = promptTitle.trim() || `${taskType} for ${legalArea}`;
+    const title = promptTitle.trim() || `${taskType || "Custom"} for ${legalArea || "General"}`;
     onSavePrompt(title);
     setSaveDialogOpen(false);
     setPromptTitle("");
@@ -48,7 +48,7 @@ export const GeneratedPrompt = ({
     <Card className="card-gradient">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle>Generated Prompt</CardTitle>
+          <CardTitle>Prompt Preview</CardTitle>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" onClick={onCopyGeneratedPrompt}>
               <Copy className="h-4 w-4 mr-2" />
@@ -77,26 +77,36 @@ export const GeneratedPrompt = ({
                       id="prompt-title"
                       value={promptTitle}
                       onChange={(e) => setPromptTitle(e.target.value)}
-                      placeholder={`${taskType} for ${legalArea}`}
+                      placeholder={`${taskType || "Custom"} for ${legalArea || "General"}`}
                       className="col-span-3"
                     />
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right text-muted-foreground">Legal Area</Label>
-                    <div className="col-span-3 text-sm">{legalArea}</div>
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right text-muted-foreground">Task Type</Label>
-                    <div className="col-span-3 text-sm">{taskType}</div>
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right text-muted-foreground">Technique</Label>
-                    <div className="col-span-3 text-sm">{promptTechnique === "cot" ? "Chain of Thought" :
-                      promptTechnique === "tot" ? "Tree of Thought" : 
-                      promptTechnique === "icl" ? "In-Context Learning" :
-                      promptTechnique === "tabular" ? "Tabular Output" : 
-                      "Self-Refine"}</div>
-                  </div>
+                  {(legalArea || taskType || promptTechnique) && (
+                    <>
+                      {legalArea && (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label className="text-right text-muted-foreground">Legal Area</Label>
+                          <div className="col-span-3 text-sm">{legalArea}</div>
+                        </div>
+                      )}
+                      {taskType && (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label className="text-right text-muted-foreground">Task Type</Label>
+                          <div className="col-span-3 text-sm">{taskType}</div>
+                        </div>
+                      )}
+                      {promptTechnique && (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label className="text-right text-muted-foreground">Technique</Label>
+                          <div className="col-span-3 text-sm">{promptTechnique === "cot" ? "Chain of Thought" :
+                            promptTechnique === "tot" ? "Tree of Thought" : 
+                            promptTechnique === "icl" ? "In-Context Learning" :
+                            promptTechnique === "tabular" ? "Tabular Output" : 
+                            "Self-Refine"}</div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
                 <DialogFooter>
                   <Button type="submit" onClick={handleSavePrompt}>Save to Library</Button>
