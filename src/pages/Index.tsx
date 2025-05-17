@@ -1,9 +1,8 @@
-
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { BookOpen, Calendar, FileText, Users } from "lucide-react";
+import { BookOpen, Calendar, FileText, Users, FileStack } from "lucide-react";
 
 const Index = () => {
   // Most recent AI updates for the dashboard
@@ -74,6 +73,23 @@ const Index = () => {
             <Card className="card-gradient">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center text-lg">
+                  <FileStack className="h-5 w-5 mr-2 text-lawadapt-purple" />
+                  Legal Workflows
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-6">
+                  <p className="text-muted-foreground mb-2">Run AI-powered legal document workflows</p>
+                  <Button variant="outline" asChild>
+                    <Link to="/legal-workflows">View Workflows</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="card-gradient">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center text-lg">
                   <BookOpen className="h-5 w-5 mr-2 text-lawadapt-purple" />
                   Training Hub
                 </CardTitle>
@@ -83,23 +99,6 @@ const Index = () => {
                   <p className="text-muted-foreground mb-2">Access tailored training modules</p>
                   <Button variant="outline" asChild>
                     <Link to="/training-hub">View Training</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-gradient">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center text-lg">
-                  <Calendar className="h-5 w-5 mr-2 text-lawadapt-purple" />
-                  Project Planner
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-6">
-                  <p className="text-muted-foreground mb-2">View rollout phases and tasks</p>
-                  <Button variant="outline" asChild>
-                    <Link to="/project-planner">View Projects</Link>
                   </Button>
                 </div>
               </CardContent>

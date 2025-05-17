@@ -35,6 +35,38 @@ export const sampleWorkflows: LegalWorkflow[] = [
     ]
   },
   {
+    id: "contract-review-assistant",
+    title: "Contract Review Assistant",
+    description: "Review contracts with AI assistance to identify key terms and potential issues",
+    category: "Contract Review",
+    estimatedTime: "15-20 minutes",
+    recommendedPersonas: ["strategic", "pragmatic", "cautious"],
+    steps: [
+      {
+        id: "contract-summary",
+        title: "Contract Summary",
+        description: "Get a concise summary of the contract's key terms and obligations",
+        promptInstruction: "Create a comprehensive summary of this contract. Include: 1) Contract type, 2) Key parties, 3) Primary obligations, 4) Contract term/duration, 5) Termination conditions, 6) Payment obligations if applicable.",
+        inputType: "text",
+        inputInstructions: "Paste your contract text here or upload a file",
+      },
+      {
+        id: "identify-issues",
+        title: "Issue Identification",
+        description: "Identify potential legal issues and ambiguous terms in the contract",
+        promptInstruction: "Based on the contract summary, identify potential legal issues and ambiguous terms. For each issue found, explain: 1) The specific clause or section containing the issue, 2) The nature of the problem, 3) The potential business impact, 4) Risk level (High/Medium/Low).",
+        inputType: "previous-output",
+      },
+      {
+        id: "revision-suggestions",
+        title: "Revision Suggestions",
+        description: "Get suggestions for revising problematic clauses",
+        promptInstruction: "For each issue identified in the previous step, provide: 1) A suggested revised clause that addresses the issue, 2) A brief explanation of how the revision improves the contract, 3) Any alternative approaches the client might consider. Focus on practical solutions that protect the client's interests.",
+        inputType: "previous-output",
+      }
+    ]
+  },
+  {
     id: "trademark-opposition",
     title: "Trademark Opposition Response",
     description: "Generate a response to a trademark opposition notice",

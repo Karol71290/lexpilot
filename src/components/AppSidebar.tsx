@@ -10,6 +10,7 @@ import {
   PenTool,
   Shield,
   LucideIcon,
+  FileStack,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import SidebarItem from "@/components/SidebarItem";
@@ -64,6 +65,11 @@ export function AppSidebar() {
       title: "Prompt Builder",
       path: "/prompt-builder",
       icon: PenTool,
+    },
+    {
+      title: "Legal Workflows",
+      path: "/legal-workflows",
+      icon: FileStack,
     },
     {
       title: "AI Use Policy Generator",
