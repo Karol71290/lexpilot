@@ -4,29 +4,33 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Wand2 } from "lucide-react";
+import { Wand2, CodeXml, Zap, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const improvementOptions = [
   {
     id: "auto-technique",
     name: "🔄 Auto-Select Best Prompt Technique",
-    description: "Applies the most relevant prompting approach"
+    description: "Applies the most relevant prompting approach",
+    icon: Wand2
   },
   {
     id: "xml-tags",
     name: "🏷️ Add XML Tags",
-    description: "Wraps key variables or instructions with tags for structure"
+    description: "Wraps key variables or instructions with tags for structure",
+    icon: CodeXml
   },
   {
     id: "clarity",
     name: "✨ Enhance Clarity and Precision",
-    description: "Refines prompt wording to reduce ambiguity"
+    description: "Refines prompt wording to reduce ambiguity",
+    icon: Zap
   },
   {
     id: "legal-context",
     name: "📚 Add Domain-Specific Legal Context",
-    description: "Inserts helpful references and definitions"
+    description: "Inserts helpful references and definitions",
+    icon: BookOpen
   },
 ];
 
