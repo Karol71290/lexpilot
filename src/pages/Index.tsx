@@ -30,7 +30,7 @@ const Index = () => {
       <div className="grid gap-6">
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold">Welcome to Lex Pilot</h2>
+            <h2 className="text-3xl font-bold">Welcome to LawAdapt Pro</h2>
             <Button asChild>
               <Link to="/quiz">Take AI Adoption Quiz</Link>
             </Button>
