@@ -1,14 +1,10 @@
-import { useState, useEffect } from "react";
-import { FreeformPromptInput } from "./FreeformPromptInput";
-import { PromptBuilderForm } from "./PromptBuilderForm";
-import { GeneratedPrompt } from "./GeneratedPrompt";
-import { AIResponsePreview } from "./AIResponsePreview";
-import { PopularTemplates } from "./PopularTemplates";
-import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
-import { ImprovementOptions } from "./form-components/ImprovementOptions";
+
+import { useEffect } from "react";
+import { useBuilderTabLogic } from "@/hooks/useBuilderTabLogic";
+import { InputSection } from "./sections/InputSection";
+import { OutputSection } from "./sections/OutputSection";
+import { TemplatesSidebar } from "./sections/TemplatesSidebar";
 import { useOpenAiApi } from "@/hooks/useOpenAiApi";
-import { useToast } from "@/hooks/use-toast";
 
 interface BuilderTabContentProps {
   legalArea: string;
@@ -77,94 +73,23 @@ export const BuilderTabContent = ({
   handleCopyPrompt,
   handleTemplateSelect
 }: BuilderTabContentProps) => {
-  const [promptText, setPromptText] = useState("");
   const { error } = useOpenAiApi();
-  const { toast } = useToast();
   
-  // Track if we have either custom input or structured input
-  const [hasUserInput, setHasUserInput] = useState(false);
-  
-  // Auto-generate prompt when legal area and task type are selected
-  useEffect(() => {
-    const shouldAutoGenerate = legalArea && taskType && !promptText.trim();
-    
-    if (shouldAutoGenerate) {
-      handleAutoGeneratePrompt();
-    }
-  }, [legalArea, taskType, jurisdiction, tone, outputFormat]);
-  
-  // Update hasUserInput whenever relevant fields change
-  useEffect(() => {
-    setHasUserInput(!!promptText.trim() || (!!legalArea && !!taskType));
-  }, [promptText, legalArea, taskType]);
-  
-  // Auto-generate prompt based on selected parameters
-  const handleAutoGeneratePrompt = () => {
-    if (!legalArea || !taskType) return;
-    
-    // Generate prompt based on selected parameters without making an API call
-    let techniquePrefix = "";
-    
-    switch(promptTechnique) {
-      case "cot":
-        techniquePrefix = "Follow a chain of thought approach to solve this step by step. ";
-        break;
-      case "tot":
-        techniquePrefix = "Explore multiple reasoning paths, considering different approaches before arriving at your conclusion. ";
-        break;
-      case "icl":
-        techniquePrefix = "Based on the following examples, create a similar response: [EXAMPLES WOULD BE HERE]. ";
-        break;
-      case "tabular":
-        techniquePrefix = "Present your response in a well-structured tabular format where appropriate. ";
-        break;
-      case "refine":
-        techniquePrefix = "After providing an initial response, critique your answer and provide an improved version. ";
-        break;
-    }
-    
-    const generatedPrompt = `${techniquePrefix}
-
-As a legal professional with expertise in ${legalArea}, I need assistance with the following ${taskType} task:
-
-${context ? `Context/Background information: ${context}\n` : ""}
-${jurisdiction ? `Jurisdiction: ${jurisdiction}\n` : ""}
-${tone ? `Tone: ${tone}\n` : ""}
-${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
-
-    setGeneratedPrompt(generatedPrompt);
-    
-    toast({
-      title: "Prompt Updated",
-      description: "Your legal prompt has been automatically generated based on your selections."
-    });
-  };
-  
-  const handleGenerateWithAI = () => {
-    if (promptText.trim()) {
-      // If user has typed a custom prompt, use that
-      handleCustomPromptSubmit(promptText.trim());
-    } else if (generatedPrompt) {
-      // Otherwise, use the generated/structured prompt
-      handleCustomPromptSubmit(generatedPrompt);
-    } else if (legalArea && taskType) {
-      // If no prompt is visible yet but we have basic fields, generate one
-      handleGeneratePrompt();
-    } else {
-      // No input available
-      toast({
-        title: "Missing Input",
-        description: "Please enter a prompt or fill in Legal Area and Task Type.",
-        variant: "destructive"
-      });
-    }
-  };
-  
-  // Determine if the improve button should be enabled
-  const shouldEnableImproveButton = () => {
-    // Enable if we have a custom prompt or generated prompt and we're not currently generating a response
-    return (!!generatedPrompt || !!promptText.trim()) && !isGeneratingResponse;
-  };
+  const {
+    promptText,
+    setPromptText,
+    handleGenerateWithAI
+  } = useBuilderTabLogic({
+    legalArea,
+    taskType,
+    jurisdiction,
+    tone,
+    outputFormat,
+    promptTechnique,
+    context,
+    handleCustomPromptSubmit,
+    handleGeneratePrompt
+  });
 
   // Override the auto-generated prompt when user types their own
   useEffect(() => {
@@ -174,86 +99,58 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
         setGeneratedPrompt("");
       }
     }
-  }, [promptText]);
+  }, [promptText, generatedPrompt, setGeneratedPrompt]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
         {/* Input Section */}
-        <div className="space-y-6">
-          {/* Freeform Prompt Input */}
-          <FreeformPromptInput 
-            promptText={promptText}
-            setPromptText={setPromptText}
-            temperature={temperature}
-            setTemperature={setTemperature}
-            maxTokens={maxTokens}
-            setMaxTokens={setMaxTokens}
-            error={error}
-          />
-          
-          {/* Prompt Builder Form */}
-          <PromptBuilderForm
-            legalArea={legalArea}
-            setLegalArea={setLegalArea}
-            taskType={taskType}
-            setTaskType={setTaskType}
-            promptTechnique={promptTechnique}
-            setPromptTechnique={setPromptTechnique}
-            context={context}
-            setContext={setContext}
-            jurisdiction={jurisdiction}
-            setJurisdiction={setJurisdiction}
-            tone={tone}
-            setTone={setTone}
-            outputFormat={outputFormat}
-            setOutputFormat={setOutputFormat}
-          />
-          
-          {/* Primary Action Button */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <ImprovementOptions 
-              onImproveWithAI={handleImproveWithAI} 
-              disabled={!shouldEnableImproveButton()}
-            />
-            
-            <Button 
-              className="w-full sm:w-auto" 
-              onClick={handleGenerateWithAI}
-              disabled={isGeneratingResponse || (!promptText.trim() && !generatedPrompt && !legalArea && !taskType)}
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              Generate with OpenAI
-            </Button>
-          </div>
-        </div>
+        <InputSection
+          promptText={promptText}
+          setPromptText={setPromptText}
+          legalArea={legalArea}
+          setLegalArea={setLegalArea}
+          taskType={taskType}
+          setTaskType={setTaskType}
+          promptTechnique={promptTechnique}
+          setPromptTechnique={setPromptTechnique}
+          context={context}
+          setContext={setContext}
+          jurisdiction={jurisdiction}
+          setJurisdiction={setJurisdiction}
+          tone={tone}
+          setTone={setTone}
+          outputFormat={outputFormat}
+          setOutputFormat={setOutputFormat}
+          temperature={temperature}
+          setTemperature={setTemperature}
+          maxTokens={maxTokens}
+          setMaxTokens={setMaxTokens}
+          error={error}
+          isGeneratingResponse={isGeneratingResponse}
+          generatedPrompt={generatedPrompt}
+          handleGenerateWithAI={handleGenerateWithAI}
+          handleImproveWithAI={handleImproveWithAI}
+        />
         
         {/* Output Section */}
-        <div className="space-y-6">
-          {/* Generated Prompt */}
-          <GeneratedPrompt 
-            generatedPrompt={promptText.trim() || generatedPrompt}
-            legalArea={legalArea}
-            taskType={taskType}
-            promptTechnique={promptTechnique}
-            onCopyGeneratedPrompt={handleCopyGeneratedPrompt}
-            onSavePrompt={handleSavePrompt}
-          />
-          
-          {/* AI Response Preview */}
-          <AIResponsePreview 
-            aiResponse={aiResponse} 
-            isLoading={isGeneratingResponse}
-            provider="OpenAI"
-            error={error}
-            onSaveResponse={handleSavePrompt}
-          />
-        </div>
+        <OutputSection
+          promptText={promptText}
+          generatedPrompt={generatedPrompt}
+          legalArea={legalArea}
+          taskType={taskType}
+          promptTechnique={promptTechnique}
+          aiResponse={aiResponse}
+          isGeneratingResponse={isGeneratingResponse}
+          error={error}
+          handleCopyGeneratedPrompt={handleCopyGeneratedPrompt}
+          handleSavePrompt={handleSavePrompt}
+        />
       </div>
       
       <div className="lg:col-span-1">
-        {/* Popular Templates */}
-        <PopularTemplates 
+        {/* Templates Sidebar */}
+        <TemplatesSidebar
           templates={templates}
           selectedTemplate={selectedTemplate}
           onCopyPrompt={handleCopyPrompt}
