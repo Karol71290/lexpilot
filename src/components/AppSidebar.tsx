@@ -61,6 +61,12 @@ export function AppSidebar() {
       path: "/all-personas",
       icon: Users,
     },
+    {
+      title: "Persona Journey",
+      path: "/persona-journey",
+      icon: BookOpen,
+      badge: "New",
+    },
   ];
 
   const toolsNavItems: NavItem[] = [
@@ -117,6 +123,11 @@ export function AppSidebar() {
                     <Link to={item.path}>
                       <item.icon className="h-4 w-4 mr-2" />
                       <span>{item.title}</span>
+                      {item.badge && (
+                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs ml-2">
+                          {item.badge}
+                        </Badge>
+                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
