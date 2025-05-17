@@ -1,10 +1,8 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { ModelSettings } from "./form-components/ModelSettings";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { ErrorAlert } from "./form-components/ErrorAlert";
+import { TextAreaInput } from "./form-components/TextAreaInput";
 
 interface FreeformPromptInputProps {
   promptText: string;
@@ -44,18 +42,10 @@ export const FreeformPromptInput = ({
         </div>
       </CardHeader>
       <CardContent>
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
-        <Textarea
-          placeholder="Type or paste your prompt here (e.g., 'Summarize this clause under UK trademark law')"
+        <ErrorAlert error={error} />
+        <TextAreaInput 
           value={promptText}
-          onChange={(e) => setPromptText(e.target.value)}
-          className="min-h-[100px]"
+          onChange={setPromptText}
         />
       </CardContent>
     </Card>
