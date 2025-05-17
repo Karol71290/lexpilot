@@ -15,6 +15,7 @@ import TrainingHub from "./pages/TrainingHub";
 import ProjectPlanner from "./pages/ProjectPlanner";
 import FeedbackTracker from "./pages/FeedbackTracker";
 import AIReleases from "./pages/AIReleases";
+import AIUsePolicyGenerator from "./pages/AIUsePolicyGenerator";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/project-planner" element={<ProjectPlanner />} />
           <Route path="/feedback-tracker" element={<FeedbackTracker />} />
           <Route path="/ai-releases" element={<AIReleases />} />
+          <Route path="/ai-use-policy-generator" element={<AIUsePolicyGenerator />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

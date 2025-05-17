@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   PenTool,
   BookOpen as Book,
+  Shield,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -57,6 +58,11 @@ export function AppSidebar() {
       title: "Prompt Builder",
       path: "/prompt-builder",
       icon: PenTool,
+    },
+    {
+      title: "AI Use Policy Generator",
+      path: "/ai-use-policy-generator",
+      icon: Shield,
     },
     {
       title: "Training Hub",
