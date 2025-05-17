@@ -6,8 +6,8 @@ import { Sparkles } from "lucide-react";
 import { ImprovementOptions } from "../form-components/ImprovementOptions";
 
 interface InputSectionProps {
-  promptText: string;
-  setPromptText: (value: string) => void;
+  customPromptText: string;
+  setCustomPromptText: (value: string) => void;
   legalArea: string;
   setLegalArea: (value: string) => void;
   taskType: string;
@@ -28,14 +28,15 @@ interface InputSectionProps {
   setMaxTokens: (value: number) => void;
   error?: string | null;
   isGeneratingResponse: boolean;
-  generatedPrompt: string;
+  isGeneratingPrompt: boolean;
+  currentPrompt: string;
   handleGenerateWithAI: () => void;
   handleImproveWithAI: (improvements: string[]) => void;
 }
 
 export const InputSection = ({
-  promptText,
-  setPromptText,
+  customPromptText,
+  setCustomPromptText,
   legalArea,
   setLegalArea,
   taskType,
@@ -56,27 +57,32 @@ export const InputSection = ({
   setMaxTokens,
   error,
   isGeneratingResponse,
-  generatedPrompt,
+  isGeneratingPrompt,
+  currentPrompt,
   handleGenerateWithAI,
   handleImproveWithAI
 }: InputSectionProps) => {
   // Determine if the improve button should be enabled
-  const shouldEnableImproveButton = () => {
-    // Enable if we have a custom prompt or generated prompt and we're not currently generating a response
-    return (!!generatedPrompt || !!promptText.trim()) && !isGeneratingResponse;
-  };
+  const isImproveButtonDisabled = !currentPrompt || isGeneratingPrompt || isGeneratingResponse;
+  
+  // Determine if the generate button should be enabled
+  const isGenerateButtonDisabled = 
+    isGeneratingResponse || 
+    isGeneratingPrompt || 
+    (!customPromptText.trim() && !currentPrompt && !legalArea && !taskType);
 
   return (
     <div className="space-y-6">
       {/* Freeform Prompt Input */}
       <FreeformPromptInput 
-        promptText={promptText}
-        setPromptText={setPromptText}
+        customPromptText={customPromptText}
+        setCustomPromptText={setCustomPromptText}
         temperature={temperature}
         setTemperature={setTemperature}
         maxTokens={maxTokens}
         setMaxTokens={setMaxTokens}
         error={error}
+        isGeneratingPrompt={isGeneratingPrompt}
       />
       
       {/* Prompt Builder Form */}
@@ -101,16 +107,16 @@ export const InputSection = ({
       <div className="flex flex-col sm:flex-row gap-4 items-center">
         <ImprovementOptions 
           onImproveWithAI={handleImproveWithAI} 
-          disabled={!shouldEnableImproveButton()}
+          disabled={isImproveButtonDisabled}
         />
         
         <Button 
           className="w-full sm:w-auto" 
           onClick={handleGenerateWithAI}
-          disabled={isGeneratingResponse || (!promptText.trim() && !generatedPrompt && !legalArea && !taskType)}
+          disabled={isGenerateButtonDisabled}
         >
           <Sparkles className="h-4 w-4 mr-2" />
-          Generate with OpenAI
+          {isGeneratingResponse ? "Generating..." : "Generate with OpenAI"}
         </Button>
       </div>
     </div>

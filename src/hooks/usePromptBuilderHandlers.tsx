@@ -5,11 +5,15 @@ import { usePromptHandlers } from "./usePromptHandlers";
 import { useOpenAiApi } from "@/hooks/useOpenAiApi";
 
 interface UsePromptBuilderHandlersProps {
+  currentPrompt: string;
+  customPromptText: string;
+  setCustomPromptText: (prompt: string) => void;
   generatedPrompt: string;
   setGeneratedPrompt: (prompt: string) => void;
   setAiResponse: (response: string) => void;
   setSelectedTemplate: (id: string | null) => void;
   setIsGeneratingResponse: (isGenerating: boolean) => void;
+  setIsGeneratingPrompt: (isGenerating: boolean) => void;
   templates: any[];
   setTemplates: (templates: any[]) => void;
   nextTemplateId: number;
@@ -27,11 +31,15 @@ interface UsePromptBuilderHandlersProps {
 }
 
 export function usePromptBuilderHandlers({
+  currentPrompt,
+  customPromptText,
+  setCustomPromptText,
   generatedPrompt,
   setGeneratedPrompt,
   setAiResponse,
   setSelectedTemplate,
   setIsGeneratingResponse,
+  setIsGeneratingPrompt,
   templates,
   setTemplates,
   nextTemplateId,
@@ -71,6 +79,9 @@ export function usePromptBuilderHandlers({
   
   // Prompt handlers
   const promptHandlers = usePromptHandlers({
+    currentPrompt,
+    customPromptText,
+    setCustomPromptText,
     generatedPrompt,
     setGeneratedPrompt,
     legalArea,
@@ -81,13 +92,15 @@ export function usePromptBuilderHandlers({
     tone,
     outputFormat,
     setAiResponse,
-    setIsGeneratingResponse
+    setIsGeneratingResponse,
+    setIsGeneratingPrompt
   });
 
   // Handle template selection
   const handleTemplateSelect = async (template: any) => {
     setSelectedTemplate(template.id);
     setGeneratedPrompt(template.template);
+    setCustomPromptText(""); // Clear any custom text
     setLegalArea(template.legalArea);
     setTaskType(template.taskType);
     
@@ -101,7 +114,7 @@ export function usePromptBuilderHandlers({
   return {
     // Template handlers
     handleCopyPrompt: templateHandlers.handleCopyPrompt,
-    handleSavePrompt: (title: string) => templateHandlers.handleSavePrompt(title, generatedPrompt),
+    handleSavePrompt: (title: string) => templateHandlers.handleSavePrompt(title, currentPrompt),
     
     // Prompt handlers
     handleGeneratePrompt: promptHandlers.handleGeneratePrompt,

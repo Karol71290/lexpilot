@@ -21,10 +21,14 @@ interface BuilderTabContentProps {
   setTone: (value: string) => void;
   outputFormat: string;
   setOutputFormat: (value: string) => void;
+  customPromptText: string;
+  setCustomPromptText: (value: string) => void;
   generatedPrompt: string;
   setGeneratedPrompt: (value: string) => void;
+  currentPrompt: string;
   aiResponse: string;
   isGeneratingResponse: boolean;
+  isGeneratingPrompt: boolean;
   templates: any[];
   selectedTemplate: string | null;
   temperature: number;
@@ -55,10 +59,14 @@ export const BuilderTabContent = ({
   setTone,
   outputFormat,
   setOutputFormat,
+  customPromptText,
+  setCustomPromptText,
   generatedPrompt,
   setGeneratedPrompt,
+  currentPrompt,
   aiResponse,
   isGeneratingResponse,
+  isGeneratingPrompt,
   templates,
   selectedTemplate,
   temperature,
@@ -76,9 +84,8 @@ export const BuilderTabContent = ({
   const { error } = useOpenAiApi();
   
   const {
-    promptText,
-    setPromptText,
-    handleGenerateWithAI
+    handleGenerateWithAI,
+    hasValidPrompt
   } = useBuilderTabLogic({
     legalArea,
     taskType,
@@ -87,27 +94,21 @@ export const BuilderTabContent = ({
     outputFormat,
     promptTechnique,
     context,
+    customPromptText,
+    setCustomPromptText,
     handleCustomPromptSubmit,
-    handleGeneratePrompt
+    handleGeneratePrompt,
+    isGeneratingPrompt,
+    currentPrompt
   });
-
-  // Override the auto-generated prompt when user types their own
-  useEffect(() => {
-    if (promptText.trim()) {
-      // User entered a custom prompt, clear the auto-generated one
-      if (generatedPrompt) {
-        setGeneratedPrompt("");
-      }
-    }
-  }, [promptText, generatedPrompt, setGeneratedPrompt]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
         {/* Input Section */}
         <InputSection
-          promptText={promptText}
-          setPromptText={setPromptText}
+          customPromptText={customPromptText}
+          setCustomPromptText={setCustomPromptText}
           legalArea={legalArea}
           setLegalArea={setLegalArea}
           taskType={taskType}
@@ -128,20 +129,21 @@ export const BuilderTabContent = ({
           setMaxTokens={setMaxTokens}
           error={error}
           isGeneratingResponse={isGeneratingResponse}
-          generatedPrompt={generatedPrompt}
+          isGeneratingPrompt={isGeneratingPrompt}
+          currentPrompt={currentPrompt}
           handleGenerateWithAI={handleGenerateWithAI}
           handleImproveWithAI={handleImproveWithAI}
         />
         
         {/* Output Section */}
         <OutputSection
-          promptText={promptText}
-          generatedPrompt={generatedPrompt}
+          currentPrompt={currentPrompt}
           legalArea={legalArea}
           taskType={taskType}
           promptTechnique={promptTechnique}
           aiResponse={aiResponse}
           isGeneratingResponse={isGeneratingResponse}
+          isGeneratingPrompt={isGeneratingPrompt}
           error={error}
           handleCopyGeneratedPrompt={handleCopyGeneratedPrompt}
           handleSavePrompt={handleSavePrompt}

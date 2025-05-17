@@ -11,11 +11,15 @@ const PromptBuilder = () => {
   // Use our custom hooks to manage state and handlers
   const state = usePromptBuilderState();
   const handlers = usePromptBuilderHandlers({
+    currentPrompt: state.currentPrompt,
+    customPromptText: state.customPromptText,
+    setCustomPromptText: state.setCustomPromptText,
     generatedPrompt: state.generatedPrompt,
     setGeneratedPrompt: state.setGeneratedPrompt,
     setAiResponse: state.setAiResponse,
     setSelectedTemplate: state.setSelectedTemplate,
     setIsGeneratingResponse: state.setIsGeneratingResponse,
+    setIsGeneratingPrompt: state.setIsGeneratingPrompt,
     templates: state.templates,
     setTemplates: state.setTemplates,
     nextTemplateId: state.nextTemplateId,
@@ -64,10 +68,14 @@ const PromptBuilder = () => {
               setTone={state.setTone}
               outputFormat={state.outputFormat}
               setOutputFormat={state.setOutputFormat}
+              customPromptText={state.customPromptText}
+              setCustomPromptText={state.setCustomPromptText}
               generatedPrompt={state.generatedPrompt}
               setGeneratedPrompt={state.setGeneratedPrompt}
+              currentPrompt={state.currentPrompt}
               aiResponse={state.aiResponse}
               isGeneratingResponse={state.isGeneratingResponse}
+              isGeneratingPrompt={state.isGeneratingPrompt}
               templates={state.templates}
               selectedTemplate={state.selectedTemplate}
               temperature={state.temperature}

@@ -2,26 +2,28 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ModelSettings } from "./form-components/ModelSettings";
 import { ErrorAlert } from "./form-components/ErrorAlert";
-import { TextAreaInput } from "./form-components/TextAreaInput";
+import { Textarea } from "@/components/ui/textarea";
 
 interface FreeformPromptInputProps {
-  promptText: string;
-  setPromptText: (value: string) => void;
+  customPromptText: string;
+  setCustomPromptText: (value: string) => void;
   temperature: number;
   setTemperature: (value: number) => void;
   maxTokens: number;
   setMaxTokens: (value: number) => void;
   error?: string | null;
+  isGeneratingPrompt: boolean;
 }
 
 export const FreeformPromptInput = ({
-  promptText,
-  setPromptText,
+  customPromptText,
+  setCustomPromptText,
   temperature,
   setTemperature,
   maxTokens,
   setMaxTokens,
-  error
+  error,
+  isGeneratingPrompt
 }: FreeformPromptInputProps) => {
   return (
     <Card className="mb-6">
@@ -43,9 +45,12 @@ export const FreeformPromptInput = ({
       </CardHeader>
       <CardContent>
         <ErrorAlert error={error} />
-        <TextAreaInput 
-          value={promptText}
-          onChange={setPromptText}
+        <Textarea
+          placeholder="Type or paste your prompt here (e.g., 'Summarize this clause under UK trademark law')"
+          value={customPromptText}
+          onChange={(e) => setCustomPromptText(e.target.value)}
+          className="min-h-[100px]"
+          disabled={isGeneratingPrompt}
         />
       </CardContent>
     </Card>
