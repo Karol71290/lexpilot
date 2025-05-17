@@ -123,6 +123,11 @@ export const BuilderTabContent = ({
           
           {/* Primary Action Button */}
           <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <ImprovementOptions 
+              onImproveWithAI={handleImproveWithAI} 
+              disabled={!generatedPrompt || isGeneratingResponse}
+            />
+            
             <Button 
               className="w-full sm:w-auto" 
               onClick={handleGenerateWithAI}
@@ -131,11 +136,6 @@ export const BuilderTabContent = ({
               <Sparkles className="h-4 w-4 mr-2" />
               Generate with OpenAI
             </Button>
-            
-            <ImprovementOptions 
-              onImproveWithAI={handleImproveWithAI} 
-              disabled={!generatedPrompt || isGeneratingResponse}
-            />
           </div>
         </div>
         
