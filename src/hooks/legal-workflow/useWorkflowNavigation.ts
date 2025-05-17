@@ -21,13 +21,17 @@ export function useWorkflowNavigation(
     if (!activeWorkflow) return;
     
     if (currentStepIndex < activeWorkflow.steps.length - 1) {
-      setCurrentStepIndex(prev => prev + 1);
+      // Fix: Pass direct number instead of a callback function
+      const nextIndex = currentStepIndex + 1;
+      setCurrentStepIndex(nextIndex);
     }
   }, [activeWorkflow, currentStepIndex, setCurrentStepIndex]);
 
   const goToPrevStep = useCallback(() => {
     if (currentStepIndex > 0) {
-      setCurrentStepIndex(prev => prev - 1);
+      // Fix: Pass direct number instead of a callback function
+      const prevIndex = currentStepIndex - 1;
+      setCurrentStepIndex(prevIndex);
     }
   }, [currentStepIndex, setCurrentStepIndex]);
 
