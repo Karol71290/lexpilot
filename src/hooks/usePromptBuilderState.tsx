@@ -19,6 +19,10 @@ export function usePromptBuilderState() {
   const [templates, setTemplates] = useState(promptTemplates);
   const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
   const [nextTemplateId, setNextTemplateId] = useState(promptTemplates.length + 1);
+  
+  // Gemini API model settings
+  const [temperature, setTemperature] = useState(0.7);
+  const [maxTokens, setMaxTokens] = useState(800);
 
   // Listen for clear search events
   useEffect(() => {
@@ -56,6 +60,10 @@ export function usePromptBuilderState() {
     setIsGeneratingResponse,
     nextTemplateId,
     setNextTemplateId,
+    temperature,
+    setTemperature,
+    maxTokens,
+    setMaxTokens,
     toast
   };
 }

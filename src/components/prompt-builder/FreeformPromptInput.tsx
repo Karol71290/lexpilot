@@ -4,15 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { improvementOptions, ImprovementOptions } from "./form-components/ImprovementOptions";
+import { ModelSettings } from "./form-components/ModelSettings";
 
 interface FreeformPromptInputProps {
   onSubmitPrompt: (promptText: string) => void;
   onImproveWithAI: (improvements: string[]) => void;
+  temperature: number;
+  setTemperature: (value: number) => void;
+  maxTokens: number;
+  setMaxTokens: (value: number) => void;
 }
 
 export const FreeformPromptInput = ({
   onSubmitPrompt,
-  onImproveWithAI
+  onImproveWithAI,
+  temperature,
+  setTemperature,
+  maxTokens,
+  setMaxTokens
 }: FreeformPromptInputProps) => {
   const [promptText, setPromptText] = useState("");
 
@@ -25,8 +34,20 @@ export const FreeformPromptInput = ({
   return (
     <Card className="mb-6">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Write Your Own Prompt</CardTitle>
-        <CardDescription>Enter a custom prompt to use or enhance</CardDescription>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+          <div>
+            <CardTitle className="text-lg">Write Your Own Prompt</CardTitle>
+            <CardDescription>Enter a custom prompt to use or enhance</CardDescription>
+          </div>
+          <div className="mt-2 sm:mt-0">
+            <ModelSettings 
+              temperature={temperature}
+              setTemperature={setTemperature}
+              maxTokens={maxTokens}
+              setMaxTokens={setMaxTokens}
+            />
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <Textarea

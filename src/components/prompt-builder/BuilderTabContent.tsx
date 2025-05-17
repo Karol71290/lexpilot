@@ -25,6 +25,10 @@ interface BuilderTabContentProps {
   isGeneratingResponse: boolean;
   templates: any[];
   selectedTemplate: string | null;
+  temperature: number;
+  setTemperature: (value: number) => void;
+  maxTokens: number;
+  setMaxTokens: (value: number) => void;
   handleGeneratePrompt: () => void;
   handleCustomPromptSubmit: (promptText: string) => void;
   handleCopyGeneratedPrompt: () => void;
@@ -54,6 +58,10 @@ export const BuilderTabContent = ({
   isGeneratingResponse,
   templates,
   selectedTemplate,
+  temperature,
+  setTemperature,
+  maxTokens,
+  setMaxTokens,
   handleGeneratePrompt,
   handleCustomPromptSubmit,
   handleCopyGeneratedPrompt,
@@ -69,6 +77,10 @@ export const BuilderTabContent = ({
         <FreeformPromptInput 
           onSubmitPrompt={handleCustomPromptSubmit}
           onImproveWithAI={handleImproveWithAI}
+          temperature={temperature}
+          setTemperature={setTemperature}
+          maxTokens={maxTokens}
+          setMaxTokens={setMaxTokens}
         />
         
         {/* Prompt Builder Form */}
@@ -87,6 +99,10 @@ export const BuilderTabContent = ({
           setTone={setTone}
           outputFormat={outputFormat}
           setOutputFormat={setOutputFormat}
+          temperature={temperature}
+          setTemperature={setTemperature}
+          maxTokens={maxTokens}
+          setMaxTokens={setMaxTokens}
           onGeneratePrompt={handleGeneratePrompt}
           onImproveWithAI={handleImproveWithAI}
         />
@@ -105,6 +121,7 @@ export const BuilderTabContent = ({
         <AIResponsePreview 
           aiResponse={aiResponse} 
           isLoading={isGeneratingResponse}
+          provider="Google Gemini"
         />
       </div>
       

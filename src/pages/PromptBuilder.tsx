@@ -69,6 +69,10 @@ const PromptBuilder = () => {
               isGeneratingResponse={state.isGeneratingResponse}
               templates={state.templates}
               selectedTemplate={state.selectedTemplate}
+              temperature={state.temperature}
+              setTemperature={state.setTemperature}
+              maxTokens={state.maxTokens}
+              setMaxTokens={state.setMaxTokens}
               handleGeneratePrompt={handlers.handleGeneratePrompt}
               handleCustomPromptSubmit={handlers.handleCustomPromptSubmit}
               handleCopyGeneratedPrompt={handlers.handleCopyGeneratedPrompt}

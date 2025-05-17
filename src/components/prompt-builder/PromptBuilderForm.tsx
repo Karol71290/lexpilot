@@ -5,6 +5,7 @@ import { BasicInfoSelectors } from "./form-components/BasicInfoSelectors";
 import { PromptTechniqueSelector } from "./form-components/PromptTechniqueSelector";
 import { ContextEnrichment } from "./form-components/ContextEnrichment";
 import { ImprovementOptions } from "./form-components/ImprovementOptions";
+import { ModelSettings } from "./form-components/ModelSettings";
 
 interface PromptBuilderFormProps {
   legalArea: string;
@@ -21,6 +22,10 @@ interface PromptBuilderFormProps {
   setTone: (value: string) => void;
   outputFormat: string;
   setOutputFormat: (value: string) => void;
+  temperature: number;
+  setTemperature: (value: number) => void;
+  maxTokens: number;
+  setMaxTokens: (value: number) => void;
   onGeneratePrompt: () => void;
   onImproveWithAI: (improvements: string[]) => void;
 }
@@ -40,16 +45,32 @@ export const PromptBuilderForm = ({
   setTone,
   outputFormat,
   setOutputFormat,
+  temperature,
+  setTemperature,
+  maxTokens,
+  setMaxTokens,
   onGeneratePrompt,
   onImproveWithAI
 }: PromptBuilderFormProps) => {
   return (
     <Card className="card-gradient">
       <CardHeader>
-        <CardTitle>Legal Prompt Builder</CardTitle>
-        <CardDescription>
-          Customize your prompt with legal-specific parameters
-        </CardDescription>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+          <div>
+            <CardTitle>Legal Prompt Builder</CardTitle>
+            <CardDescription>
+              Customize your prompt with legal-specific parameters
+            </CardDescription>
+          </div>
+          <div className="mt-2 sm:mt-0">
+            <ModelSettings 
+              temperature={temperature}
+              setTemperature={setTemperature}
+              maxTokens={maxTokens}
+              setMaxTokens={setMaxTokens}
+            />
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         <BasicInfoSelectors 
