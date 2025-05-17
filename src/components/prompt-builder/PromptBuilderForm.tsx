@@ -1,11 +1,8 @@
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BasicInfoSelectors } from "./form-components/BasicInfoSelectors";
 import { PromptTechniqueSelector } from "./form-components/PromptTechniqueSelector";
 import { ContextEnrichment } from "./form-components/ContextEnrichment";
-import { ImprovementOptions } from "./form-components/ImprovementOptions";
-import { ModelSettings } from "./form-components/ModelSettings";
 
 interface PromptBuilderFormProps {
   legalArea: string;
@@ -22,12 +19,6 @@ interface PromptBuilderFormProps {
   setTone: (value: string) => void;
   outputFormat: string;
   setOutputFormat: (value: string) => void;
-  temperature: number;
-  setTemperature: (value: number) => void;
-  maxTokens: number;
-  setMaxTokens: (value: number) => void;
-  onGeneratePrompt: () => void;
-  onImproveWithAI: (improvements: string[]) => void;
 }
 
 export const PromptBuilderForm = ({
@@ -45,31 +36,15 @@ export const PromptBuilderForm = ({
   setTone,
   outputFormat,
   setOutputFormat,
-  temperature,
-  setTemperature,
-  maxTokens,
-  setMaxTokens,
-  onGeneratePrompt,
-  onImproveWithAI
 }: PromptBuilderFormProps) => {
   return (
     <Card className="card-gradient">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-          <div>
-            <CardTitle>Legal Prompt Builder</CardTitle>
-            <CardDescription>
-              Customize your prompt with legal-specific parameters
-            </CardDescription>
-          </div>
-          <div className="mt-2 sm:mt-0">
-            <ModelSettings 
-              temperature={temperature}
-              setTemperature={setTemperature}
-              maxTokens={maxTokens}
-              setMaxTokens={setMaxTokens}
-            />
-          </div>
+        <div>
+          <CardTitle>Legal Prompt Builder</CardTitle>
+          <CardDescription>
+            Customize your prompt with legal-specific parameters
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -96,13 +71,6 @@ export const PromptBuilderForm = ({
           setOutputFormat={setOutputFormat}
         />
       </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row gap-3">
-        <Button className="w-full sm:w-auto" onClick={onGeneratePrompt}>
-          Generate Legal Prompt
-        </Button>
-        
-        <ImprovementOptions onImproveWithAI={onImproveWithAI} />
-      </CardFooter>
     </Card>
   );
 };

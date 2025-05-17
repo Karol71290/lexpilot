@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, Download } from "lucide-react";
+import { Copy, Download, Save } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -57,8 +57,8 @@ export const GeneratedPrompt = ({
             <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  Save
+                  <Save className="h-4 w-4 mr-2" />
+                  Save to Library
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">

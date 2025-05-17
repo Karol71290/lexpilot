@@ -32,9 +32,17 @@ export const improvementOptions = [
 
 interface ImprovementOptionsProps {
   onImproveWithAI: (improvements: string[]) => void;
+  label?: string;
+  variant?: "default" | "outline" | "secondary";
+  disabled?: boolean;
 }
 
-export const ImprovementOptions = ({ onImproveWithAI }: ImprovementOptionsProps) => {
+export const ImprovementOptions = ({ 
+  onImproveWithAI, 
+  label = "Enhance Prompt", 
+  variant = "outline",
+  disabled = false
+}: ImprovementOptionsProps) => {
   const { toast } = useToast();
   const [selectedImprovements, setSelectedImprovements] = useState<string[]>([]);
   
@@ -63,9 +71,9 @@ export const ImprovementOptions = ({ onImproveWithAI }: ImprovementOptionsProps)
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-full sm:w-auto">
+        <Button variant={variant} className="w-full sm:w-auto" disabled={disabled}>
           <Wand2 className="mr-2 h-4 w-4" />
-          Improve with AI
+          {label}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full max-w-sm p-4" align="end">

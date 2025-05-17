@@ -1,4 +1,3 @@
-
 import { useToast } from "@/hooks/use-toast";
 import { useGeminiApi } from "@/hooks/useGeminiApi";
 
@@ -61,10 +60,10 @@ export function usePromptBuilderHandlers({
   };
 
   const handleGeneratePrompt = async () => {
-    if (!legalArea || !taskType || !promptTechnique) {
+    if (!legalArea || !taskType) {
       toast({
         title: "Missing Fields",
-        description: "Please fill out all required fields to generate a prompt.",
+        description: "Please fill out at least Legal Area and Task Type to generate a prompt.",
         variant: "destructive"
       });
       return;
@@ -101,7 +100,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
 
     setGeneratedPrompt(generatedPrompt);
     
-    // Call Gemini API instead of using mock data
+    // Call Gemini API
     setIsGeneratingResponse(true);
     
     try {
@@ -118,7 +117,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
         setAiResponse(response);
         toast({
           title: "Prompt Generated",
-          description: "Your custom legal prompt has been generated with Gemini API."
+          description: "Your legal prompt has been generated with Gemini API."
         });
       } else {
         setAiResponse("Sorry, there was an error generating a response with Gemini AI. Please try again later.");
@@ -144,27 +143,37 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
   const handleCustomPromptSubmit = async (promptText: string) => {
     setGeneratedPrompt(promptText);
     
-    // Clear form fields since we're using a custom prompt
-    setLegalArea("");
-    setTaskType("");
-    
     // Call Gemini API
     setIsGeneratingResponse(true);
     
     try {
-      const response = await generateWithGemini(promptText);
+      // Add legal context to the prompt if legalArea or taskType is selected
+      let fullPrompt = promptText;
+      
+      if (legalArea || taskType) {
+        const contextInfo = [];
+        if (legalArea) contextInfo.push(`Legal Area: ${legalArea}`);
+        if (taskType) contextInfo.push(`Task Type: ${taskType}`);
+        
+        fullPrompt = `[${contextInfo.join(', ')}]\n\n${promptText}`;
+      }
+      
+      const response = await generateWithGemini(fullPrompt, {
+        temperature: 0.7,
+        maxTokens: 800
+      });
       
       if (response) {
         setAiResponse(response);
         toast({
-          title: "Custom Prompt Submitted",
-          description: "Your custom prompt has been processed with Gemini AI."
+          title: "Custom Prompt Processed",
+          description: "Your prompt has been processed with Gemini AI."
         });
       } else {
         setAiResponse("Sorry, there was an error generating a response with Gemini AI. Please try again later.");
         toast({
           title: "Error",
-          description: "Failed to process custom prompt with Gemini AI.",
+          description: "Failed to process prompt with Gemini AI.",
           variant: "destructive"
         });
       }

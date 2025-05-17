@@ -18,23 +18,30 @@ export function useGeminiApi() {
     setError(null);
     
     try {
-      const { data, error } = await supabase.functions.invoke("gemini-prompt", {
-        body: {
-          prompt,
-          model: options.model || "gemini-pro",
-          temperature: options.temperature || 0.7,
-          topK: options.topK || 32,
-          maxTokens: options.maxTokens || 800,
-        },
-      });
+      // Wrap Supabase API call in try-catch to handle edge function errors properly
+      let response;
+      try {
+        response = await supabase.functions.invoke("gemini-prompt", {
+          body: {
+            prompt,
+            model: options.model || "gemini-pro",
+            temperature: options.temperature || 0.7,
+            topK: options.topK || 32,
+            maxTokens: options.maxTokens || 800,
+          },
+        });
+      } catch (e) {
+        console.error("Edge function error:", e);
+        throw new Error(`Failed to call Gemini API: ${e instanceof Error ? e.message : "Unknown error"}`);
+      }
 
-      if (error) {
-        console.error("Error calling Gemini API:", error);
-        setError(error.message || "Failed to generate response");
+      if (response.error) {
+        console.error("Error calling Gemini API:", response.error);
+        setError(response.error.message || "Failed to generate response");
         return null;
       }
 
-      return data.generatedText;
+      return response.data.generatedText;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
       console.error("Exception in generateWithGemini:", errorMessage);

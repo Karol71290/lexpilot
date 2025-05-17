@@ -1,9 +1,13 @@
 
+import { useState } from "react";
 import { FreeformPromptInput } from "./FreeformPromptInput";
 import { PromptBuilderForm } from "./PromptBuilderForm";
 import { GeneratedPrompt } from "./GeneratedPrompt";
 import { AIResponsePreview } from "./AIResponsePreview";
 import { PopularTemplates } from "./PopularTemplates";
+import { Button } from "@/components/ui/button";
+import { Sparkles } from "lucide-react";
+import { ImprovementOptions } from "./form-components/ImprovementOptions";
 
 interface BuilderTabContentProps {
   legalArea: string;
@@ -70,59 +74,86 @@ export const BuilderTabContent = ({
   handleCopyPrompt,
   handleTemplateSelect
 }: BuilderTabContentProps) => {
+  const [promptText, setPromptText] = useState("");
+  
+  const handleGenerateWithAI = () => {
+    if (promptText.trim()) {
+      handleCustomPromptSubmit(promptText.trim());
+    } else {
+      handleGeneratePrompt();
+    }
+  };
+  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
-        {/* Freeform Prompt Input */}
-        <FreeformPromptInput 
-          onSubmitPrompt={handleCustomPromptSubmit}
-          onImproveWithAI={handleImproveWithAI}
-          temperature={temperature}
-          setTemperature={setTemperature}
-          maxTokens={maxTokens}
-          setMaxTokens={setMaxTokens}
-        />
+        {/* Input Section */}
+        <div className="space-y-6">
+          {/* Freeform Prompt Input */}
+          <FreeformPromptInput 
+            promptText={promptText}
+            setPromptText={setPromptText}
+            temperature={temperature}
+            setTemperature={setTemperature}
+            maxTokens={maxTokens}
+            setMaxTokens={setMaxTokens}
+          />
+          
+          {/* Prompt Builder Form */}
+          <PromptBuilderForm
+            legalArea={legalArea}
+            setLegalArea={setLegalArea}
+            taskType={taskType}
+            setTaskType={setTaskType}
+            promptTechnique={promptTechnique}
+            setPromptTechnique={setPromptTechnique}
+            context={context}
+            setContext={setContext}
+            jurisdiction={jurisdiction}
+            setJurisdiction={setJurisdiction}
+            tone={tone}
+            setTone={setTone}
+            outputFormat={outputFormat}
+            setOutputFormat={setOutputFormat}
+          />
+          
+          {/* Primary Action Button */}
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <Button 
+              className="w-full sm:w-auto" 
+              onClick={handleGenerateWithAI}
+              disabled={isGeneratingResponse || (!promptText.trim() && !legalArea && !taskType)}
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate Prompt with AI
+            </Button>
+            
+            <ImprovementOptions 
+              onImproveWithAI={handleImproveWithAI} 
+              disabled={!generatedPrompt || isGeneratingResponse}
+            />
+          </div>
+        </div>
         
-        {/* Prompt Builder Form */}
-        <PromptBuilderForm
-          legalArea={legalArea}
-          setLegalArea={setLegalArea}
-          taskType={taskType}
-          setTaskType={setTaskType}
-          promptTechnique={promptTechnique}
-          setPromptTechnique={setPromptTechnique}
-          context={context}
-          setContext={setContext}
-          jurisdiction={jurisdiction}
-          setJurisdiction={setJurisdiction}
-          tone={tone}
-          setTone={setTone}
-          outputFormat={outputFormat}
-          setOutputFormat={setOutputFormat}
-          temperature={temperature}
-          setTemperature={setTemperature}
-          maxTokens={maxTokens}
-          setMaxTokens={setMaxTokens}
-          onGeneratePrompt={handleGeneratePrompt}
-          onImproveWithAI={handleImproveWithAI}
-        />
-        
-        {/* Generated Prompt */}
-        <GeneratedPrompt 
-          generatedPrompt={generatedPrompt}
-          legalArea={legalArea}
-          taskType={taskType}
-          promptTechnique={promptTechnique}
-          onCopyGeneratedPrompt={handleCopyGeneratedPrompt}
-          onSavePrompt={handleSavePrompt}
-        />
-        
-        {/* AI Response Preview */}
-        <AIResponsePreview 
-          aiResponse={aiResponse} 
-          isLoading={isGeneratingResponse}
-          provider="Google Gemini"
-        />
+        {/* Output Section */}
+        <div className="space-y-6">
+          {/* Generated Prompt */}
+          <GeneratedPrompt 
+            generatedPrompt={generatedPrompt}
+            legalArea={legalArea}
+            taskType={taskType}
+            promptTechnique={promptTechnique}
+            onCopyGeneratedPrompt={handleCopyGeneratedPrompt}
+            onSavePrompt={handleSavePrompt}
+          />
+          
+          {/* AI Response Preview */}
+          <AIResponsePreview 
+            aiResponse={aiResponse} 
+            isLoading={isGeneratingResponse}
+            provider="Google Gemini"
+          />
+        </div>
       </div>
       
       <div className="lg:col-span-1">
