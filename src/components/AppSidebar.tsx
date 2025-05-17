@@ -12,6 +12,7 @@ import {
   Shield,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import SidebarItem from "@/components/SidebarItem";
 import {
   Sidebar,
   SidebarContent,
@@ -23,7 +24,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
@@ -100,19 +100,13 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNavItems.map((item) => (
-                <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton
-                    asChild
-                    className={cn(
-                      isActive(item.path) && "bg-sidebar-accent text-white"
-                    )}
-                  >
-                    <Link to={item.path} className="flex items-center">
-                      <item.icon className="h-5 w-5 mr-3" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <SidebarItem 
+                  key={item.path}
+                  path={item.path}
+                  icon={item.icon}
+                  title={item.title}
+                  isActive={isActive(item.path)}
+                />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -123,19 +117,13 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {toolsNavItems.map((item) => (
-                <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton
-                    asChild
-                    className={cn(
-                      isActive(item.path) && "bg-sidebar-accent text-white"
-                    )}
-                  >
-                    <Link to={item.path} className="flex items-center">
-                      <item.icon className="h-5 w-5 mr-3" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <SidebarItem 
+                  key={item.path}
+                  path={item.path}
+                  icon={item.icon}
+                  title={item.title}
+                  isActive={isActive(item.path)}
+                />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -145,19 +133,12 @@ export function AppSidebar() {
           <SidebarGroupLabel>Updates</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={cn(
-                    isActive("/ai-releases") && "bg-sidebar-accent text-white"
-                  )}
-                >
-                  <Link to="/ai-releases" className="flex items-center">
-                    <BookOpen className="h-5 w-5 mr-3" />
-                    <span>New AI Releases</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <SidebarItem
+                path="/ai-releases"
+                icon={BookOpen}
+                title="New AI Releases"
+                isActive={isActive("/ai-releases")}
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
