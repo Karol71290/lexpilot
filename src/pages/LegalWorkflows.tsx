@@ -7,7 +7,9 @@ import { WorkflowSelector } from "@/components/legal-workflows/WorkflowSelector"
 import { WorkflowSidebar } from "@/components/legal-workflows/WorkflowSidebar";
 import { WorkflowStepView } from "@/components/legal-workflows/WorkflowStep";
 import { PersonaIndicator } from "@/components/legal-workflows/PersonaIndicator";
-import { ArrowLeft } from "lucide-react";
+import { CustomWorkflowGenerator } from "@/components/legal-workflows/CustomWorkflowGenerator";
+import { ArrowLeft, Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function LegalWorkflowsContent() {
   const { 
@@ -28,9 +30,15 @@ function LegalWorkflowsContent() {
   } = useLegalWorkflow();
 
   const [showSelector, setShowSelector] = useState(!activeWorkflow);
+  const [activeTab, setActiveTab] = useState<string>("templates");
 
   const handleSelectWorkflow = (workflowId: string) => {
     selectWorkflow(workflowId);
+    setShowSelector(false);
+  };
+
+  const handleCustomWorkflowGenerated = (workflow: any) => {
+    startNewWorkflow(workflow);
     setShowSelector(false);
   };
 
@@ -49,10 +57,33 @@ function LegalWorkflowsContent() {
         <div className="mb-6">
           <PersonaIndicator />
         </div>
-        <WorkflowSelector 
-          workflows={workflows} 
-          onSelect={handleSelectWorkflow} 
-        />
+        
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="templates">Template Workflows</TabsTrigger>
+            <TabsTrigger value="custom">Custom Workflow</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="templates">
+            <WorkflowSelector 
+              workflows={workflows.filter(w => !w.isCustom)} 
+              onSelect={handleSelectWorkflow} 
+            />
+          </TabsContent>
+          
+          <TabsContent value="custom">
+            <CustomWorkflowGenerator onWorkflowGenerated={handleCustomWorkflowGenerated} />
+            {workflows.filter(w => w.isCustom).length > 0 && (
+              <div className="mt-8">
+                <h2 className="text-xl font-semibold mb-4">Recently Generated Workflows</h2>
+                <WorkflowSelector 
+                  workflows={workflows.filter(w => w.isCustom)} 
+                  onSelect={handleSelectWorkflow} 
+                />
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     );
   }
@@ -75,12 +106,19 @@ function LegalWorkflowsContent() {
       
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-6 flex items-center">
-            <Button variant="ghost" onClick={handleBackToSelector} className="mr-2">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Workflows
-            </Button>
-            <h1 className="text-2xl font-bold">{activeWorkflow.title}</h1>
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center">
+              <Button variant="ghost" onClick={handleBackToSelector} className="mr-2">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Workflows
+              </Button>
+              <h1 className="text-2xl font-bold">{activeWorkflow.title}</h1>
+            </div>
+            {activeWorkflow.isCustom && (
+              <div>
+                <span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Custom Workflow</span>
+              </div>
+            )}
           </div>
           
           <WorkflowStepView

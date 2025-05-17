@@ -11,7 +11,7 @@ import { useWorkflowExport } from './legal-workflow/useWorkflowExport';
 const WorkflowContext = createContext<WorkflowContextType | undefined>(undefined);
 
 export const WorkflowProvider = ({ children }: { children: ReactNode }) => {
-  const [workflows] = useState<LegalWorkflow[]>(sampleWorkflows);
+  const [workflows, setWorkflows] = useState<LegalWorkflow[]>(sampleWorkflows);
   const [activeWorkflow, setActiveWorkflow] = useState<LegalWorkflow | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [stepResults, setStepResults] = useState<StepResult[]>([]);
@@ -28,10 +28,15 @@ export const WorkflowProvider = ({ children }: { children: ReactNode }) => {
   }, [workflows]);
 
   const startNewWorkflow = useCallback((workflow: LegalWorkflow) => {
+    // Check if this is a new custom workflow we need to add to our list
+    if (workflow.isCustom && !workflows.some(w => w.id === workflow.id)) {
+      setWorkflows(prevWorkflows => [...prevWorkflows, workflow]);
+    }
+    
     setActiveWorkflow(workflow);
     setCurrentStepIndex(0);
     setStepResults([]);
-  }, []);
+  }, [workflows]);
 
   // Import navigation hooks
   const {

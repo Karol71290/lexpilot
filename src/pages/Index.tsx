@@ -1,8 +1,9 @@
+
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { BookOpen, Calendar, FileText, Users, FileStack } from "lucide-react";
+import { BookOpen, Calendar, FileText, Users, FileStack, Sparkles } from "lucide-react";
 
 const Index = () => {
   // Most recent AI updates for the dashboard
@@ -36,6 +37,26 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="card-gradient relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-1">
+                <span className="px-2 py-1 bg-primary text-white text-xs font-semibold rounded-bl">NEW</span>
+              </div>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center text-lg">
+                  <FileStack className="h-5 w-5 mr-2 text-lawadapt-purple" />
+                  AI Legal Workflows
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-6">
+                  <p className="text-muted-foreground mb-2">Dynamic AI-powered workflows for legal tasks</p>
+                  <Button variant="default" asChild>
+                    <Link to="/legal-workflows">Create Workflow</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card className="card-gradient">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center text-lg">
@@ -65,23 +86,6 @@ const Index = () => {
                   <p className="text-muted-foreground mb-2">Access persona-tailored prompt templates</p>
                   <Button variant="outline" asChild>
                     <Link to="/prompt-builder">Build Prompts</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-gradient">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center text-lg">
-                  <FileStack className="h-5 w-5 mr-2 text-lawadapt-purple" />
-                  Legal Workflows
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-6">
-                  <p className="text-muted-foreground mb-2">Run AI-powered legal document workflows</p>
-                  <Button variant="outline" asChild>
-                    <Link to="/legal-workflows">View Workflows</Link>
                   </Button>
                 </div>
               </CardContent>

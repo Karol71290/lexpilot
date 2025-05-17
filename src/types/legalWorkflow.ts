@@ -7,7 +7,7 @@ export interface WorkflowStep {
   inputType: 'text' | 'file' | 'previous-output';
   inputInstructions?: string;
   isOptional?: boolean;
-  defaultSkipLogic?: string; // Logic to determine if step should be skipped
+  defaultSkipLogic?: string;
 }
 
 export interface LegalWorkflow {
@@ -16,6 +16,12 @@ export interface LegalWorkflow {
   description: string;
   category: string;
   steps: WorkflowStep[];
-  recommendedPersonas?: string[]; // Personas this workflow is particularly suited for
-  estimatedTime?: string; // e.g., "10-15 minutes"
+  recommendedPersonas?: string[];
+  estimatedTime?: string;
+  isCustom?: boolean; // Flag for dynamically generated workflows
+}
+
+export interface CustomWorkflowRequest {
+  prompt: string;
+  userPrompt: string;
 }

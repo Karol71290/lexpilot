@@ -11,6 +11,7 @@ import {
   Shield,
   LucideIcon,
   FileStack,
+  Sparkles,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import SidebarItem from "@/components/SidebarItem";
@@ -27,11 +28,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface NavItem {
   title: string;
   path: string;
   icon: LucideIcon;
+  badge?: string;
 }
 
 export function AppSidebar() {
@@ -62,14 +65,15 @@ export function AppSidebar() {
 
   const toolsNavItems: NavItem[] = [
     {
-      title: "Prompt Builder",
-      path: "/prompt-builder",
-      icon: PenTool,
-    },
-    {
       title: "Legal Workflows",
       path: "/legal-workflows",
       icon: FileStack,
+      badge: "New",
+    },
+    {
+      title: "Prompt Builder",
+      path: "/prompt-builder",
+      icon: PenTool,
     },
     {
       title: "AI Use Policy Generator",
@@ -127,10 +131,22 @@ export function AppSidebar() {
             <SidebarMenu>
               {toolsNavItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.path}>
-                      <item.icon className="h-4 w-4 mr-2" />
-                      <span>{item.title}</span>
+                  <SidebarMenuButton 
+                    asChild
+                    className={cn(
+                      location.pathname === item.path && "bg-accent/50"
+                    )}
+                  >
+                    <Link to={item.path} className="flex items-center justify-between w-full">
+                      <div className="flex items-center">
+                        <item.icon className="h-4 w-4 mr-2" />
+                        <span>{item.title}</span>
+                      </div>
+                      {item.badge && (
+                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs">
+                          {item.badge}
+                        </Badge>
+                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

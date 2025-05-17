@@ -27,7 +27,7 @@ export function useWorkflowSteps(
       .map(step => {
         const result = stepResults.find(r => r.stepId === step.id);
         if (result && !result.skipped) {
-          return `Step: ${step.title}\nInput: ${result.input}\nOutput: ${result.output}`;
+          return `Step ${step.title}:\n- Task: ${step.description}\n- Input: ${result.input}\n- Output: ${result.output}`;
         }
         return null;
       })
@@ -54,12 +54,17 @@ export function useWorkflowSteps(
       // Adapt the prompt based on user persona
       const adaptedPrompt = adaptPromptToPersona(currentStep.promptInstruction, currentStep);
       
+      // Create system prompt depending on whether this is a custom workflow or template
+      const workflowType = activeWorkflow.isCustom ? 'dynamically generated' : 'template';
+      const systemPrompt = `You are an expert legal assistant helping with a multi-step ${workflowType} legal workflow called "${activeWorkflow.title}". 
+      
+The current step is: "${currentStep.title}" - ${currentStep.description}
+
+${activeWorkflow.isCustom ? `This workflow was created dynamically based on a user request. Maintain continuity between steps and ensure your responses build logically on previous steps.` : ''}`;
+      
       // Prepare messages for the AI
       const messages = [
-        { 
-          role: 'system' as const, 
-          content: `You are an expert legal assistant helping with a multi-step legal workflow called "${activeWorkflow.title}". The current step is: "${currentStep.title}".` 
-        },
+        { role: 'system' as const, content: systemPrompt },
         { role: 'user' as const, content: `${adaptedPrompt}\n\nHere is the input to work with:\n${contextInput}` }
       ];
       
