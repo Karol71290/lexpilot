@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search } from "lucide-react";
+import { Search, ToggleLeft, ToggleRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 // Import prompt templates data
 import { promptTemplates } from "@/components/prompt-builder/PromptTemplateData";
@@ -15,6 +15,7 @@ import { PopularTemplates } from "@/components/prompt-builder/PopularTemplates";
 import { GeneratedPrompt } from "@/components/prompt-builder/GeneratedPrompt";
 import { AIResponsePreview } from "@/components/prompt-builder/AIResponsePreview";
 import { PromptTemplateList } from "@/components/prompt-builder/PromptTemplateList";
+import { FreeformPromptInput } from "@/components/prompt-builder/FreeformPromptInput";
 
 const PromptBuilder = () => {
   const { toast } = useToast();
@@ -32,6 +33,7 @@ const PromptBuilder = () => {
   const [templates, setTemplates] = useState(promptTemplates);
   const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
   const [nextTemplateId, setNextTemplateId] = useState(promptTemplates.length + 1);
+  const [useGuidedBuilder, setUseGuidedBuilder] = useState(true);
 
   // Listen for clear search events
   useEffect(() => {
@@ -50,6 +52,32 @@ const PromptBuilder = () => {
     
     setSelectedTemplate(id);
     setGeneratedPrompt(text);
+  };
+
+  const handleSubmitFreeformPrompt = (promptText: string) => {
+    setGeneratedPrompt(promptText);
+    
+    toast({
+      title: "Prompt Submitted",
+      description: "Your custom prompt has been added to the preview."
+    });
+
+    // In a real application, this would call an AI API
+    setIsGeneratingResponse(true);
+    setTimeout(() => {
+      const mockAIResponse = `This is a simulated AI response based on your freeform prompt. In a real implementation, this would call an API to generate a response based on your custom prompt text.
+
+Here's a structured response:
+
+1. First point of analysis
+2. Second point with relevant context
+3. Recommendations based on the prompt
+4. Considerations for implementation
+5. Next steps and additional resources`;
+
+      setAiResponse(mockAIResponse);
+      setIsGeneratingResponse(false);
+    }, 1500);
   };
 
   const handleGeneratePrompt = () => {
@@ -280,6 +308,17 @@ For this enhanced ${taskType} in ${legalArea} law, here's a comprehensive ${outp
     }, 2000);
   };
 
+  const toggleBuilderMode = () => {
+    setUseGuidedBuilder(!useGuidedBuilder);
+    
+    toast({
+      title: useGuidedBuilder ? "Switched to Freeform Mode" : "Switched to Guided Mode",
+      description: useGuidedBuilder 
+        ? "You can now write or paste prompts directly." 
+        : "You can now build prompts using the guided interface."
+    });
+  };
+
   return (
     <AppLayout title="Legal Prompt Builder">
       <div className="grid gap-6">
@@ -288,16 +327,35 @@ For this enhanced ${taskType} in ${legalArea} law, here's a comprehensive ${outp
             <h1 className="text-3xl font-bold">Legal Prompt Builder</h1>
             <p className="text-muted-foreground">Craft effective legal prompts for AI tools tailored to your specific needs</p>
           </div>
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search templates..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              onClick={toggleBuilderMode}
+              className="hidden md:flex items-center gap-2"
+            >
+              {useGuidedBuilder ? <ToggleLeft className="h-5 w-5" /> : <ToggleRight className="h-5 w-5" />}
+              {useGuidedBuilder ? 'Switch to Freeform' : 'Switch to Guided'}
+            </Button>
+            <div className="relative w-full md:w-64">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search templates..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
           </div>
         </section>
+        
+        <Button 
+          variant="outline" 
+          onClick={toggleBuilderMode}
+          className="md:hidden flex items-center gap-2 w-full mb-2"
+        >
+          {useGuidedBuilder ? <ToggleLeft className="h-5 w-5" /> : <ToggleRight className="h-5 w-5" />}
+          {useGuidedBuilder ? 'Switch to Freeform Mode' : 'Switch to Guided Mode'}
+        </Button>
         
         <Tabs defaultValue="builder">
           <TabsList className="grid w-full grid-cols-2">
@@ -308,27 +366,33 @@ For this enhanced ${taskType} in ${legalArea} law, here's a comprehensive ${outp
           <TabsContent value="builder" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
-                {/* Prompt Builder Form */}
-                <PromptBuilderForm
-                  legalArea={legalArea}
-                  setLegalArea={setLegalArea}
-                  taskType={taskType}
-                  setTaskType={setTaskType}
-                  promptTechnique={promptTechnique}
-                  setPromptTechnique={setPromptTechnique}
-                  context={context}
-                  setContext={setContext}
-                  jurisdiction={jurisdiction}
-                  setJurisdiction={setJurisdiction}
-                  tone={tone}
-                  setTone={setTone}
-                  outputFormat={outputFormat}
-                  setOutputFormat={setOutputFormat}
-                  onGeneratePrompt={handleGeneratePrompt}
-                  onImproveWithAI={handleImproveWithAI}
-                />
+                {/* Conditional rendering based on builder mode */}
+                {useGuidedBuilder ? (
+                  <PromptBuilderForm
+                    legalArea={legalArea}
+                    setLegalArea={setLegalArea}
+                    taskType={taskType}
+                    setTaskType={setTaskType}
+                    promptTechnique={promptTechnique}
+                    setPromptTechnique={setPromptTechnique}
+                    context={context}
+                    setContext={setContext}
+                    jurisdiction={jurisdiction}
+                    setJurisdiction={setJurisdiction}
+                    tone={tone}
+                    setTone={setTone}
+                    outputFormat={outputFormat}
+                    setOutputFormat={setOutputFormat}
+                    onGeneratePrompt={handleGeneratePrompt}
+                    onImproveWithAI={handleImproveWithAI}
+                  />
+                ) : (
+                  <FreeformPromptInput
+                    onSubmitPrompt={handleSubmitFreeformPrompt}
+                  />
+                )}
                 
-                {/* Generated Prompt */}
+                {/* Generated Prompt - shown for both modes */}
                 <GeneratedPrompt 
                   generatedPrompt={generatedPrompt}
                   legalArea={legalArea}
@@ -336,9 +400,10 @@ For this enhanced ${taskType} in ${legalArea} law, here's a comprehensive ${outp
                   promptTechnique={promptTechnique}
                   onCopyGeneratedPrompt={handleCopyGeneratedPrompt}
                   onSavePrompt={handleSavePrompt}
+                  onImproveWithAI={handleImproveWithAI}
                 />
                 
-                {/* AI Response Preview */}
+                {/* AI Response Preview - shown for both modes */}
                 <AIResponsePreview 
                   aiResponse={aiResponse} 
                   isLoading={isGeneratingResponse}
