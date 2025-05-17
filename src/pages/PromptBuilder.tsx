@@ -1,4 +1,3 @@
-
 import { AppLayout } from "@/components/AppLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePromptBuilderState } from "@/hooks/usePromptBuilderState";
@@ -13,6 +12,7 @@ const PromptBuilder = () => {
   const handlers = usePromptBuilderHandlers({
     generatedPrompt: state.generatedPrompt,
     setGeneratedPrompt: state.setGeneratedPrompt,
+    promptText: state.searchQuery, // Pass searchQuery as promptText
     setAiResponse: state.setAiResponse,
     setSelectedTemplate: state.setSelectedTemplate,
     setIsGeneratingResponse: state.setIsGeneratingResponse,
