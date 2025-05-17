@@ -63,7 +63,7 @@ export const InputSection = ({
   // Determine if the improve button should be enabled
   const shouldEnableImproveButton = () => {
     // Enable if we have a custom prompt or generated prompt and we're not currently generating a response
-    return (!!generatedPrompt || !!promptText.trim()) && !isGeneratingResponse;
+    return (!!(promptText?.trim() || generatedPrompt)) && !isGeneratingResponse;
   };
 
   return (

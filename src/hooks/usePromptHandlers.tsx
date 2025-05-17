@@ -1,4 +1,3 @@
-
 import { useToast } from "@/hooks/use-toast";
 import { useAIResponseHandlers } from "./useAIResponseHandlers";
 
@@ -103,9 +102,21 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
     });
   };
   
+  const getCurrentPrompt = (): string => {
+    // First check if there's text in the freeform input
+    if (promptText?.trim()) {
+      return promptText.trim();
+    }
+    // Otherwise use the generated prompt if it exists
+    else if (generatedPrompt) {
+      return generatedPrompt;
+    }
+    return ""; // Return empty string if neither exists
+  };
+  
   const handleImproveWithAI = async (improvements: string[]) => {
-    // Get the prompt from either promptText input or generatedPrompt
-    const promptToImprove = promptText?.trim() || generatedPrompt;
+    // Get the current prompt from either source, prioritizing manual input
+    const promptToImprove = getCurrentPrompt();
     
     if (!promptToImprove) {
       toast({
@@ -167,6 +178,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
     handleGeneratePrompt,
     handleCustomPromptSubmit,
     handleCopyGeneratedPrompt,
-    handleImproveWithAI
+    handleImproveWithAI,
+    getCurrentPrompt
   };
 }
