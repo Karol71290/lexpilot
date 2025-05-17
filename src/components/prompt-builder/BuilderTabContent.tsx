@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { ImprovementOptions } from "./form-components/ImprovementOptions";
 import { useOpenAiApi } from "@/hooks/useOpenAiApi";
+import { ChatTest } from "@/components/ChatTest";
 
 interface BuilderTabContentProps {
   legalArea: string;
@@ -157,6 +158,9 @@ export const BuilderTabContent = ({
             provider="OpenAI"
           />
         </div>
+
+        {/* Chat Test Component */}
+        <ChatTest />
       </div>
       
       <div className="lg:col-span-1">

@@ -1,30 +1,32 @@
 
+import React from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
-import { LucideIcon } from "lucide-react";
-import { SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 
 interface SidebarItemProps {
-  path: string;
-  icon: LucideIcon;
-  title: string;
-  isActive: boolean;
+  to: string;
+  icon: React.ReactNode;
+  text: string;
 }
 
-export default function SidebarItem({ path, icon: Icon, title, isActive }: SidebarItemProps) {
+export const SidebarItem = ({ to, icon, text }: SidebarItemProps) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton
-        asChild
-        className={cn(
-          isActive && "bg-sidebar-accent text-white"
-        )}
-      >
-        <Link to={path} className="flex items-center">
-          <Icon className="h-5 w-5 mr-3" />
-          <span>{title}</span>
-        </Link>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
+    <NavLink
+      to={to}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-accent",
+        isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+      )}
+    >
+      <div className="flex h-5 w-5 items-center justify-center">
+        {icon}
+      </div>
+      <span>{text}</span>
+    </NavLink>
   );
-}
+};
+
+export default SidebarItem;

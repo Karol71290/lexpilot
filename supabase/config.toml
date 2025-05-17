@@ -7,3 +7,5 @@ verify_jwt = true
 [functions.openai-prompt]
 verify_jwt = true
 
+[functions.openai-chat]
+verify_jwt = true
