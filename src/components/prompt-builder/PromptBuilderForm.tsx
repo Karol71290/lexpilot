@@ -7,16 +7,22 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload } from "lucide-react";
+import { Upload, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Checkbox,
+} from "@/components/ui/checkbox";
 
 interface PromptBuilderFormProps {
   legalArea: string;
   setLegalArea: (value: string) => void;
   taskType: string;
   setTaskType: (value: string) => void;
-  useCase: string;
-  setUseCase: (value: string) => void;
   promptTechnique: string;
   setPromptTechnique: (value: string) => void;
   context: string;
@@ -28,6 +34,7 @@ interface PromptBuilderFormProps {
   outputFormat: string;
   setOutputFormat: (value: string) => void;
   onGeneratePrompt: () => void;
+  onImproveWithAI: (improvements: string[]) => void;
 }
 
 export const PromptBuilderForm = ({
@@ -35,8 +42,6 @@ export const PromptBuilderForm = ({
   setLegalArea,
   taskType,
   setTaskType,
-  useCase,
-  setUseCase,
   promptTechnique,
   setPromptTechnique,
   context,
@@ -47,9 +52,11 @@ export const PromptBuilderForm = ({
   setTone,
   outputFormat,
   setOutputFormat,
-  onGeneratePrompt
+  onGeneratePrompt,
+  onImproveWithAI
 }: PromptBuilderFormProps) => {
   const { toast } = useToast();
+  const [selectedImprovements, setSelectedImprovements] = useState<string[]>([]);
   
   const legalAreas = [
     "Corporate", "Litigation", "IP Law", "Real Estate", "Environmental",
@@ -59,13 +66,6 @@ export const PromptBuilderForm = ({
   const taskTypes = [
     "Draft", "Analyze", "Summarize", "Review", "Compare", "Research",
     "Plan", "Advise", "Respond", "Negotiate"
-  ];
-
-  const useCases = [
-    "NDA Clause Analysis", "Trademark Opposition Response", "Contract Review",
-    "Litigation Risk Assessment", "Patent Infringement Analysis", "M&A Due Diligence",
-    "Employment Agreement Drafting", "Regulatory Compliance Check", "Document Discovery Review",
-    "Legal Research Memo", "Settlement Agreement Drafting", "Case Law Summary"
   ];
 
   const jurisdictions = [
@@ -107,10 +107,55 @@ export const PromptBuilderForm = ({
     }
   ];
 
+  const improvementOptions = [
+    {
+      id: "auto-technique",
+      name: "🔄 Auto-Select Best Prompt Technique",
+      description: "Applies the most relevant prompting approach"
+    },
+    {
+      id: "xml-tags",
+      name: "🏷️ Add XML Tags",
+      description: "Wraps key variables or instructions with tags for structure"
+    },
+    {
+      id: "clarity",
+      name: "✨ Enhance Clarity and Precision",
+      description: "Refines prompt wording to reduce ambiguity"
+    },
+    {
+      id: "legal-context",
+      name: "📚 Add Domain-Specific Legal Context",
+      description: "Inserts helpful references and definitions"
+    },
+  ];
+
   const toneOptions = [
     "Professional", "Academic", "Conversational", "Simplified",
     "Persuasive", "Objective", "Instructional"
   ];
+  
+  const toggleImprovement = (id: string) => {
+    setSelectedImprovements(current => 
+      current.includes(id) 
+        ? current.filter(item => item !== id)
+        : [...current, id]
+    );
+  };
+
+  const handleApplyImprovements = () => {
+    if (selectedImprovements.length === 0) {
+      toast({
+        title: "No Improvements Selected",
+        description: "Please select at least one improvement to apply.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    onImproveWithAI(selectedImprovements);
+    setSelectedImprovements([]);
+  };
 
   return (
     <Card className="card-gradient">
@@ -149,20 +194,6 @@ export const PromptBuilderForm = ({
               </SelectContent>
             </Select>
           </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="use-case">Legal Use Case <span className="text-red-500">*</span></Label>
-          <Select value={useCase} onValueChange={setUseCase}>
-            <SelectTrigger id="use-case">
-              <SelectValue placeholder="Select use case" />
-            </SelectTrigger>
-            <SelectContent>
-              {useCases.map((case_) => (
-                <SelectItem key={case_} value={case_}>{case_}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
         
         <div className="space-y-4">
@@ -249,10 +280,47 @@ export const PromptBuilderForm = ({
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <Button className="w-full" onClick={onGeneratePrompt}>
+      <CardFooter className="flex flex-col sm:flex-row gap-3">
+        <Button className="w-full sm:w-auto" onClick={onGeneratePrompt}>
           Generate Legal Prompt
         </Button>
+        
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-full sm:w-auto">
+              <Wand2 className="mr-2 h-4 w-4" />
+              Improve with AI
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full max-w-sm p-4" align="end">
+            <div className="space-y-4">
+              <h4 className="font-medium text-sm">Select Improvements</h4>
+              <div className="space-y-2">
+                {improvementOptions.map((option) => (
+                  <div key={option.id} className="flex items-start space-x-2 border rounded-md p-2">
+                    <Checkbox 
+                      id={option.id} 
+                      checked={selectedImprovements.includes(option.id)} 
+                      onCheckedChange={() => toggleImprovement(option.id)}
+                      className="mt-1"
+                    />
+                    <div className="grid gap-0.5">
+                      <Label htmlFor={option.id} className="cursor-pointer">
+                        {option.name}
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        {option.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Button className="w-full" onClick={handleApplyImprovements}>
+                Apply Improvements
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </CardFooter>
     </Card>
   );

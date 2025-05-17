@@ -1,20 +1,48 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Download } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface GeneratedPromptProps {
   generatedPrompt: string;
+  legalArea: string;
+  taskType: string;
+  promptTechnique: string;
   onCopyGeneratedPrompt: () => void;
-  onSavePrompt: () => void;
+  onSavePrompt: (title: string) => void;
 }
 
 export const GeneratedPrompt = ({
   generatedPrompt,
+  legalArea,
+  taskType,
+  promptTechnique,
   onCopyGeneratedPrompt,
   onSavePrompt
 }: GeneratedPromptProps) => {
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [promptTitle, setPromptTitle] = useState("");
+  
   if (!generatedPrompt) return null;
+  
+  const handleSavePrompt = () => {
+    const title = promptTitle.trim() || `${taskType} for ${legalArea}`;
+    onSavePrompt(title);
+    setSaveDialogOpen(false);
+    setPromptTitle("");
+  };
   
   return (
     <Card className="card-gradient">
@@ -26,10 +54,55 @@ export const GeneratedPrompt = ({
               <Copy className="h-4 w-4 mr-2" />
               Copy
             </Button>
-            <Button variant="outline" size="sm" onClick={onSavePrompt}>
-              <Download className="h-4 w-4 mr-2" />
-              Save
-            </Button>
+            <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Save Prompt Template</DialogTitle>
+                  <DialogDescription>
+                    Add a title to your prompt template before saving it to your library.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="prompt-title" className="text-right">
+                      Title
+                    </Label>
+                    <Input
+                      id="prompt-title"
+                      value={promptTitle}
+                      onChange={(e) => setPromptTitle(e.target.value)}
+                      placeholder={`${taskType} for ${legalArea}`}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right text-muted-foreground">Legal Area</Label>
+                    <div className="col-span-3 text-sm">{legalArea}</div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right text-muted-foreground">Task Type</Label>
+                    <div className="col-span-3 text-sm">{taskType}</div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right text-muted-foreground">Technique</Label>
+                    <div className="col-span-3 text-sm">{promptTechnique === "cot" ? "Chain of Thought" :
+                      promptTechnique === "tot" ? "Tree of Thought" : 
+                      promptTechnique === "icl" ? "In-Context Learning" :
+                      promptTechnique === "tabular" ? "Tabular Output" : 
+                      "Self-Refine"}</div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" onClick={handleSavePrompt}>Save to Library</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </CardHeader>

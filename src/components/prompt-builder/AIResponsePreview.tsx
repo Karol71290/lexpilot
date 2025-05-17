@@ -1,14 +1,17 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 interface AIResponsePreviewProps {
   aiResponse: string;
+  isLoading?: boolean;
 }
 
 export const AIResponsePreview = ({
-  aiResponse
+  aiResponse,
+  isLoading = false
 }: AIResponsePreviewProps) => {
-  if (!aiResponse) return null;
+  if (!aiResponse && !isLoading) return null;
   
   return (
     <Card className="card-gradient">
@@ -20,7 +23,14 @@ export const AIResponsePreview = ({
       </CardHeader>
       <CardContent>
         <div className="bg-background/60 p-4 rounded-md text-sm overflow-auto max-h-96 whitespace-pre-wrap">
-          {aiResponse}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8 text-muted-foreground">
+              <Loader2 className="h-6 w-6 animate-spin mr-2" />
+              <span>Generating response...</span>
+            </div>
+          ) : (
+            aiResponse
+          )}
         </div>
       </CardContent>
     </Card>
