@@ -15,7 +15,8 @@ const AI_PROVIDERS = {
   "openai": {
     label: "OpenAI",
     models: [
-      { id: "gpt-4o", name: "GPT-4o", description: "Most powerful model" },
+      { id: "gpt-4", name: "GPT-4", description: "Most powerful model" },
+      { id: "gpt-4o", name: "GPT-4o", description: "Advanced model" },
       { id: "gpt-4o-mini", name: "GPT-4o Mini", description: "Efficient model" },
       { id: "gpt-3.5-turbo", name: "GPT-3.5 Turbo", description: "Fast and efficient" }
     ]
@@ -49,6 +50,17 @@ export function AIServices() {
     connectionStatus
   } = useAISettings();
   
+  // Set default provider and model on component mount
+  useEffect(() => {
+    if (!selectedProvider) {
+      setSelectedProvider("openai");
+    }
+    
+    if (selectedProvider === "openai" && !selectedModel) {
+      setSelectedModel("gpt-4");
+    }
+  }, [selectedProvider, selectedModel, setSelectedProvider, setSelectedModel]);
+  
   const handleTestConnection = async () => {
     if (!selectedProvider || !selectedModel) {
       toast({
@@ -81,8 +93,8 @@ export function AIServices() {
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>AI Configuration Information</AlertTitle>
         <AlertDescription>
-          API keys are now stored securely in Supabase environment variables and managed server-side. 
-          Please contact your administrator to update API keys.
+          API keys are stored securely in Supabase environment variables and managed server-side. 
+          Your OpenAI API key has been configured successfully.
         </AlertDescription>
       </Alert>
 

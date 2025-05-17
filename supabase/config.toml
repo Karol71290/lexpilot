@@ -1,5 +1,12 @@
 
 project_id = "kvshgdkzafqvaubcgmic"
 
+[functions.openai-prompt]
+verify_jwt = true
+
 [functions.gemini-prompt]
 verify_jwt = true
+
+[functions.chat-completions]
+verify_jwt = true
+
