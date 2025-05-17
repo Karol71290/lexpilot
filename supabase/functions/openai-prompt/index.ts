@@ -20,7 +20,7 @@ serve(async (req) => {
   try {
     const { 
       prompt, 
-      model = "gpt-4", // Use gpt-4 as the default model
+      model = "gpt-4o-mini", // Updated to use gpt-4o-mini as the default model
       temperature = 0.7, 
       maxTokens = 800
     } = await req.json();
@@ -76,8 +76,8 @@ serve(async (req) => {
           body: JSON.stringify(requestBody)
         });
 
-        const responseText = await response.text();
         console.log("Response status:", response.status);
+        const responseText = await response.text();
         
         try {
           data = JSON.parse(responseText);

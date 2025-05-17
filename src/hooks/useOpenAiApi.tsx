@@ -24,8 +24,8 @@ export function useOpenAiApi() {
     setError(null);
     
     try {
-      // Default to GPT-4 model
-      const model = options.model || "gpt-4";
+      // Default to gpt-4o-mini model for better compatibility
+      const model = options.model || "gpt-4o-mini";
       
       // Wrap Supabase API call in try-catch to handle edge function errors properly
       let response;
@@ -45,6 +45,8 @@ export function useOpenAiApi() {
         console.error("Edge function error:", e);
         throw new Error(`Failed to call OpenAI API: ${e instanceof Error ? e.message : "Unknown error"}`);
       }
+
+      console.log("OpenAI API response:", response);
 
       if (response.error) {
         const errorMessage = response.error.message || "Failed to generate response";
@@ -90,8 +92,8 @@ export function useOpenAiApi() {
     setError(null);
     
     try {
-      // Default to GPT-4 model
-      const model = options.model || "gpt-4";
+      // Default to gpt-4o-mini model
+      const model = options.model || "gpt-4o-mini";
       
       // Wrap Supabase API call in try-catch to handle edge function errors
       let response;
@@ -111,6 +113,8 @@ export function useOpenAiApi() {
         console.error("Edge function error:", e);
         throw new Error(`Failed to call OpenAI API: ${e instanceof Error ? e.message : "Unknown error"}`);
       }
+
+      console.log("OpenAI chat API response:", response);
 
       if (response.error) {
         const errorMessage = response.error.message || "Failed to generate response";

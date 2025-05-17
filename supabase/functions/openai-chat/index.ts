@@ -1,14 +1,15 @@
 
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+
+// Get the API key from environment variables - no fallback, we expect it to be set
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -17,6 +18,24 @@ serve(async (req) => {
   }
 
   try {
+    const { 
+      messages, 
+      model = "gpt-4o-mini", // Updated to use gpt-4o-mini as the default model
+      temperature = 0.7, 
+      max_tokens = 800
+    } = await req.json();
+    
+    console.log(`Processing chat request with model: ${model}, temperature: ${temperature}`);
+    console.log(`Number of messages: ${messages.length}`);
+    
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Valid messages array is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify that the API key is available
     if (!OPENAI_API_KEY) {
       console.error("OpenAI API key not found in environment variables");
       return new Response(
@@ -27,27 +46,7 @@ serve(async (req) => {
       );
     }
 
-    // Parse request body
-    const { messages, model = "gpt-4", temperature = 0.7, max_tokens = 800 } = await req.json();
-    
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Invalid request: 'messages' array is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    console.log(`Processing OpenAI chat request with model: ${model}`);
-
-    // Prepare the request to OpenAI API
-    const requestBody = {
-      model: model,
-      messages: messages,
-      temperature: temperature,
-      max_tokens: max_tokens
-    };
-
-    // Call OpenAI API with retry logic
+    // Implement retry logic
     const maxRetries = 2;
     let retries = 0;
     let response;
@@ -55,16 +54,22 @@ serve(async (req) => {
 
     while (retries <= maxRetries) {
       try {
-        console.log(`Sending request to OpenAI API (attempt ${retries + 1})...`);
+        console.log(`Sending chat request to OpenAI API with model ${model} (attempt ${retries + 1})...`);
         response = await fetch(OPENAI_API_URL, {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${OPENAI_API_KEY}`,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify({
+            model: model,
+            messages: messages,
+            temperature: temperature,
+            max_tokens: max_tokens
+          })
         });
 
+        console.log("Response status:", response.status);
         const responseText = await response.text();
         
         try {
@@ -75,7 +80,7 @@ serve(async (req) => {
           throw new Error("Invalid JSON response from OpenAI API");
         }
         
-        // Check for API errors
+        // Check if the response contains an error
         if (data.error) {
           console.error("OpenAI API error:", data.error);
           
@@ -110,12 +115,23 @@ serve(async (req) => {
       }
     }
 
-    // Return the OpenAI response
+    // Extract the response from OpenAI's API
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error("Unexpected response structure from OpenAI API:", data);
+      return new Response(
+        JSON.stringify({ 
+          error: "Unexpected response structure from OpenAI API",
+          details: "The API response did not contain expected data format"
+        }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
-      JSON.stringify({
-        response: data.choices[0].message,
-        usage: data.usage || {},
-        model: model
+      JSON.stringify({ 
+        response: data.choices[0].message.content,
+        model,
+        usage: data.usage || {}
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

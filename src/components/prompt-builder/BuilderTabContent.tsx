@@ -156,6 +156,7 @@ export const BuilderTabContent = ({
             aiResponse={aiResponse} 
             isLoading={isGeneratingResponse}
             provider="OpenAI"
+            error={error}
           />
         </div>
 
