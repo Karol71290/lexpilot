@@ -125,7 +125,7 @@ export const BuilderTabContent = ({
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <ImprovementOptions 
               onImproveWithAI={handleImproveWithAI} 
-              disabled={isGeneratingResponse}
+              disabled={!generatedPrompt || isGeneratingResponse}
             />
             
             <Button 
