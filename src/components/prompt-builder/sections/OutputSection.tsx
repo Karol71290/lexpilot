@@ -27,22 +27,17 @@ export const OutputSection = ({
   handleCopyGeneratedPrompt,
   handleSavePrompt
 }: OutputSectionProps) => {
-  // Get the current active prompt - prioritize freeform text if it exists
-  const currentPrompt = promptText?.trim() ? promptText : generatedPrompt;
-  
   return (
     <div className="space-y-6">
       {/* Generated Prompt */}
-      {currentPrompt && (
-        <GeneratedPrompt 
-          generatedPrompt={currentPrompt}
-          legalArea={legalArea}
-          taskType={taskType}
-          promptTechnique={promptTechnique}
-          onCopyGeneratedPrompt={handleCopyGeneratedPrompt}
-          onSavePrompt={handleSavePrompt}
-        />
-      )}
+      <GeneratedPrompt 
+        generatedPrompt={promptText.trim() || generatedPrompt}
+        legalArea={legalArea}
+        taskType={taskType}
+        promptTechnique={promptTechnique}
+        onCopyGeneratedPrompt={handleCopyGeneratedPrompt}
+        onSavePrompt={handleSavePrompt}
+      />
       
       {/* AI Response Preview */}
       <AIResponsePreview 

@@ -1,10 +1,10 @@
+
 import { useToast } from "@/hooks/use-toast";
 import { useAIResponseHandlers } from "./useAIResponseHandlers";
 
 interface UsePromptHandlersProps {
   generatedPrompt: string;
   setGeneratedPrompt: (prompt: string) => void;
-  promptText?: string; // Added promptText as an optional parameter
   legalArea: string;
   taskType: string;
   promptTechnique: string;
@@ -19,7 +19,6 @@ interface UsePromptHandlersProps {
 export function usePromptHandlers({
   generatedPrompt,
   setGeneratedPrompt,
-  promptText = "", // Added with default empty string
   legalArea,
   taskType,
   promptTechnique,
@@ -102,23 +101,8 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
     });
   };
   
-  const getCurrentPrompt = (): string => {
-    // First check if there's text in the freeform input
-    if (promptText?.trim()) {
-      return promptText.trim();
-    }
-    // Otherwise use the generated prompt if it exists
-    else if (generatedPrompt) {
-      return generatedPrompt;
-    }
-    return ""; // Return empty string if neither exists
-  };
-  
   const handleImproveWithAI = async (improvements: string[]) => {
-    // Get the current prompt from either source, prioritizing manual input
-    const promptToImprove = getCurrentPrompt();
-    
-    if (!promptToImprove) {
+    if (!generatedPrompt) {
       toast({
         title: "No Prompt to Improve",
         description: "Please generate or submit a prompt before applying improvements.",
@@ -151,7 +135,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       
       improvementInstructions += ". Return ONLY the improved prompt text without any explanations or additional text.";
       
-      const response = await generateAIResponse(promptToImprove, improvementInstructions);
+      const response = await generateAIResponse(generatedPrompt, improvementInstructions);
       
       if (response) {
         setGeneratedPrompt(response);
@@ -178,7 +162,6 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
     handleGeneratePrompt,
     handleCustomPromptSubmit,
     handleCopyGeneratedPrompt,
-    handleImproveWithAI,
-    getCurrentPrompt
+    handleImproveWithAI
   };
 }
