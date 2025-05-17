@@ -7,7 +7,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+// Get the default API key from environment variables
+const DEFAULT_GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 // Use the correct model name for the v1 API
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models";
 const GEMINI_MODEL = "gemini-1.5-pro"; // Updated model name
@@ -19,7 +20,14 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, model = GEMINI_MODEL, temperature = 0.7, topK = 32, maxTokens = 800 } = await req.json();
+    const { 
+      prompt, 
+      model = GEMINI_MODEL, 
+      temperature = 0.7, 
+      topK = 32, 
+      maxTokens = 800,
+      apiKey = null // Allow for API key to be passed in request
+    } = await req.json();
     
     console.log(`Processing request with model: ${model}, temperature: ${temperature}`);
     
@@ -30,10 +38,15 @@ serve(async (req) => {
       );
     }
 
+    // Use the API key from the request if provided, otherwise use the environment variable
+    const GEMINI_API_KEY = apiKey || DEFAULT_GEMINI_API_KEY;
+    
     if (!GEMINI_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "Gemini API key is not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ 
+          error: "No API key provided. Please add your Gemini API key in Settings → AI Services."
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 

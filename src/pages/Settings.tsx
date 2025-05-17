@@ -1,4 +1,3 @@
-
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { AIServices } from "@/components/settings/AIServices";
 
 const Settings = () => {
   const { toast } = useToast();
@@ -84,10 +84,11 @@ const Settings = () => {
         <p className="text-muted-foreground mb-6">Manage your account and application preferences</p>
         
         <Tabs defaultValue="profile">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
+            <TabsTrigger value="ai-services">AI Services</TabsTrigger>
           </TabsList>
           
           <TabsContent value="profile" className="mt-6">
@@ -337,6 +338,10 @@ const Settings = () => {
                 <Button className="w-full" onClick={handleSavePreferences}>Save Preferences</Button>
               </CardFooter>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="ai-services" className="mt-6">
+            <AIServices />
           </TabsContent>
         </Tabs>
       </div>
