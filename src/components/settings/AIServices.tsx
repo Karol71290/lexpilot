@@ -77,7 +77,7 @@ export function AIServices() {
 
   return (
     <div className="space-y-6">
-      <Alert variant="info">
+      <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>AI Configuration Information</AlertTitle>
         <AlertDescription>
