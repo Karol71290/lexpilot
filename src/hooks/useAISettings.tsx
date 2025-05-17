@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define types for our hook
 type AIProvider = "openai" | "gemini" | "anthropic";
