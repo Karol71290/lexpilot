@@ -65,6 +65,7 @@ const PromptBuilder = () => {
               outputFormat={state.outputFormat}
               setOutputFormat={state.setOutputFormat}
               generatedPrompt={state.generatedPrompt}
+              setGeneratedPrompt={state.setGeneratedPrompt}
               aiResponse={state.aiResponse}
               isGeneratingResponse={state.isGeneratingResponse}
               templates={state.templates}
