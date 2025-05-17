@@ -18,6 +18,7 @@ import AIReleases from "./pages/AIReleases";
 import AIUsePolicyGenerator from "./pages/AIUsePolicyGenerator";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import Welcome from "./pages/Welcome";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="/" element={<Index />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/my-persona" element={<MyPersona />} />
