@@ -161,10 +161,10 @@ export const WorkflowProvider = ({ children }: { children: ReactNode }) => {
       // Prepare messages for the AI
       const messages = [
         { 
-          role: 'system', 
+          role: 'system' as const, 
           content: `You are an expert legal assistant helping with a multi-step legal workflow called "${activeWorkflow.title}". The current step is: "${currentStep.title}".` 
         },
-        { role: 'user', content: `${adaptedPrompt}\n\nHere is the input to work with:\n${contextInput}` }
+        { role: 'user' as const, content: `${adaptedPrompt}\n\nHere is the input to work with:\n${contextInput}` }
       ];
       
       // Call the API

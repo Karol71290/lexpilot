@@ -18,19 +18,26 @@ serve(async (req) => {
   }
 
   try {
-    const { model = "gpt-4o" } = await req.json();
+    // Log request information for debugging
+    console.log("Received request to test OpenAI connection");
+    console.log("API key exists:", !!OPENAI_API_KEY);
     
-    // Verify that the API key is available
+    // If API key is missing, return detailed error
     if (!OPENAI_API_KEY) {
       console.error("OpenAI API key not found in environment variables");
       return new Response(
-        JSON.stringify({ error: "OpenAI API key not configured on the server. Please contact the administrator." }),
+        JSON.stringify({ 
+          error: "OpenAI API key not configured on the server. Please contact the administrator.", 
+          details: "The OPENAI_API_KEY environment variable is not set in Supabase."
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // First, try to fetch available models to test if the API key is valid
+    // Test the API key by making a simple request to list models
     try {
+      console.log("Making request to OpenAI API to test the key...");
+      
       const modelsResponse = await fetch(
         OPENAI_API_URL,
         { 
@@ -41,56 +48,61 @@ serve(async (req) => {
         }
       );
       
+      console.log("Response status:", modelsResponse.status);
+      
+      // Handle non-200 responses from OpenAI
       if (!modelsResponse.ok) {
-        const errorData = await modelsResponse.json();
-        console.error("Error fetching models:", errorData);
+        const responseText = await modelsResponse.text();
+        let errorData;
+        
+        try {
+          errorData = JSON.parse(responseText);
+        } catch (e) {
+          errorData = { rawResponse: responseText };
+        }
+        
+        console.error("Error response from OpenAI API:", errorData);
         
         return new Response(
           JSON.stringify({ 
             error: errorData.error?.message || "Invalid API key or API access denied",
             code: errorData.error?.code,
-            status: modelsResponse.status
-          }),
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      
-      const modelsData = await modelsResponse.json();
-      const availableModels = modelsData.data ? modelsData.data.map((m: any) => m.id) : [];
-      
-      // Check if the selected model is available
-      const modelExists = availableModels.some((m: string) => m === model);
-      
-      if (!modelExists && model !== "gpt-4o" && model !== "gpt-4o-mini") {
-        return new Response(
-          JSON.stringify({ 
-            error: `Selected model ${model} is not available with this API key.`,
-            availableModels
+            status: modelsResponse.status,
+            details: errorData
           }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
-      // If we made it here, the API key is valid and the model is available
+      const modelsData = await modelsResponse.json();
+      console.log("Successfully fetched models from OpenAI API");
+      
+      // Return successful response with model information
       return new Response(
         JSON.stringify({ 
           success: true,
-          message: "API key is valid and the selected model is available",
-          availableModels
+          message: "API key is valid and working correctly",
+          availableModels: modelsData.data ? modelsData.data.slice(0, 10).map((m: any) => m.id) : []
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     } catch (error) {
       console.error("Error testing API key:", error);
       return new Response(
-        JSON.stringify({ error: error.message || "Failed to test API key" }),
+        JSON.stringify({ 
+          error: "Failed to test OpenAI API key", 
+          details: error instanceof Error ? error.message : "Unknown error"
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
   } catch (error) {
     console.error("Error in test-openai-connection function:", error);
     return new Response(
-      JSON.stringify({ error: error.message || "Internal server error" }),
+      JSON.stringify({ 
+        error: "Internal server error", 
+        details: error instanceof Error ? error.message : "Unknown error" 
+      }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
