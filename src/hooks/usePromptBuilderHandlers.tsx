@@ -7,7 +7,6 @@ import { useOpenAiApi } from "@/hooks/useOpenAiApi";
 interface UsePromptBuilderHandlersProps {
   generatedPrompt: string;
   setGeneratedPrompt: (prompt: string) => void;
-  promptText: string;  // Added promptText as a required parameter
   setAiResponse: (response: string) => void;
   setSelectedTemplate: (id: string | null) => void;
   setIsGeneratingResponse: (isGenerating: boolean) => void;
@@ -30,7 +29,6 @@ interface UsePromptBuilderHandlersProps {
 export function usePromptBuilderHandlers({
   generatedPrompt,
   setGeneratedPrompt,
-  promptText,  // Added promptText parameter
   setAiResponse,
   setSelectedTemplate,
   setIsGeneratingResponse,
@@ -75,7 +73,6 @@ export function usePromptBuilderHandlers({
   const promptHandlers = usePromptHandlers({
     generatedPrompt,
     setGeneratedPrompt,
-    promptText,  // Pass promptText to usePromptHandlers
     legalArea,
     taskType,
     promptTechnique,

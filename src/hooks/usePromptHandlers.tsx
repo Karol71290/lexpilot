@@ -5,7 +5,6 @@ import { useAIResponseHandlers } from "./useAIResponseHandlers";
 interface UsePromptHandlersProps {
   generatedPrompt: string;
   setGeneratedPrompt: (prompt: string) => void;
-  promptText?: string; // Added promptText as an optional parameter
   legalArea: string;
   taskType: string;
   promptTechnique: string;
@@ -20,7 +19,6 @@ interface UsePromptHandlersProps {
 export function usePromptHandlers({
   generatedPrompt,
   setGeneratedPrompt,
-  promptText = "", // Added with default empty string
   legalArea,
   taskType,
   promptTechnique,
@@ -104,10 +102,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
   };
   
   const handleImproveWithAI = async (improvements: string[]) => {
-    // Get the prompt from either promptText input or generatedPrompt
-    const promptToImprove = promptText?.trim() || generatedPrompt;
-    
-    if (!promptToImprove) {
+    if (!generatedPrompt) {
       toast({
         title: "No Prompt to Improve",
         description: "Please generate or submit a prompt before applying improvements.",
@@ -140,7 +135,7 @@ ${outputFormat ? `Please format your response as: ${outputFormat}` : ""}`;
       
       improvementInstructions += ". Return ONLY the improved prompt text without any explanations or additional text.";
       
-      const response = await generateAIResponse(promptToImprove, improvementInstructions);
+      const response = await generateAIResponse(generatedPrompt, improvementInstructions);
       
       if (response) {
         setGeneratedPrompt(response);
