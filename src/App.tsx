@@ -16,6 +16,7 @@ import ProjectPlanner from "./pages/ProjectPlanner";
 import FeedbackTracker from "./pages/FeedbackTracker";
 import AIReleases from "./pages/AIReleases";
 import AIUsePolicyGenerator from "./pages/AIUsePolicyGenerator";
+import LegalWorkflows from "./pages/LegalWorkflows";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/feedback-tracker" element={<FeedbackTracker />} />
           <Route path="/ai-releases" element={<AIReleases />} />
           <Route path="/ai-use-policy-generator" element={<AIUsePolicyGenerator />} />
+          <Route path="/legal-workflows" element={<LegalWorkflows />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
