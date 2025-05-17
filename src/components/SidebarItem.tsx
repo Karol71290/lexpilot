@@ -2,14 +2,15 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface SidebarItemProps {
   to: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   text: string;
 }
 
-export const SidebarItem = ({ to, icon, text }: SidebarItemProps) => {
+export const SidebarItem = ({ to, icon: Icon, text }: SidebarItemProps) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -22,7 +23,7 @@ export const SidebarItem = ({ to, icon, text }: SidebarItemProps) => {
       )}
     >
       <div className="flex h-5 w-5 items-center justify-center">
-        {icon}
+        <Icon className="h-4 w-4" />
       </div>
       <span>{text}</span>
     </NavLink>

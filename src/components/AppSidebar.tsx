@@ -8,8 +8,8 @@ import {
   MessageSquare,
   LayoutDashboard,
   PenTool,
-  BookOpen as Book,
   Shield,
+  LucideIcon,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import SidebarItem from "@/components/SidebarItem";
@@ -27,10 +27,16 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
+interface NavItem {
+  title: string;
+  path: string;
+  icon: LucideIcon;
+}
+
 export function AppSidebar() {
   const location = useLocation();
   
-  const mainNavItems = [
+  const mainNavItems: NavItem[] = [
     {
       title: "Dashboard",
       path: "/",
@@ -53,7 +59,7 @@ export function AppSidebar() {
     },
   ];
 
-  const toolsNavItems = [
+  const toolsNavItems: NavItem[] = [
     {
       title: "Prompt Builder",
       path: "/prompt-builder",
@@ -81,15 +87,11 @@ export function AppSidebar() {
     },
   ];
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center px-6 py-5">
         <span className="text-xl font-bold text-white flex items-center">
-          <Book className="mr-2" />
+          <BookOpen className="mr-2" />
           LawAdapt Pro
         </span>
       </SidebarHeader>
@@ -100,13 +102,14 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNavItems.map((item) => (
-                <SidebarItem 
-                  key={item.path}
-                  path={item.path}
-                  icon={item.icon}
-                  title={item.title}
-                  isActive={isActive(item.path)}
-                />
+                <SidebarMenuItem key={item.path}>
+                  <SidebarMenuButton asChild>
+                    <Link to={item.path}>
+                      <item.icon className="h-4 w-4 mr-2" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -117,13 +120,14 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {toolsNavItems.map((item) => (
-                <SidebarItem 
-                  key={item.path}
-                  path={item.path}
-                  icon={item.icon}
-                  title={item.title}
-                  isActive={isActive(item.path)}
-                />
+                <SidebarMenuItem key={item.path}>
+                  <SidebarMenuButton asChild>
+                    <Link to={item.path}>
+                      <item.icon className="h-4 w-4 mr-2" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -133,12 +137,14 @@ export function AppSidebar() {
           <SidebarGroupLabel>Updates</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarItem
-                path="/ai-releases"
-                icon={BookOpen}
-                title="New AI Releases"
-                isActive={isActive("/ai-releases")}
-              />
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link to="/ai-releases">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    <span>New AI Releases</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
