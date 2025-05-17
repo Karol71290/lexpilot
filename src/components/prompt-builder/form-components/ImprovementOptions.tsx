@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Wand2, CodeXml, Zap, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const improvementOptions = [
   {
@@ -74,47 +75,69 @@ export const ImprovementOptions = ({
     setOpen(false); // Close popover after applying
   };
 
+  // Determine if we need to show a tooltip
+  const showTooltip = disabled;
+  
+  const buttonElement = (
+    <Button 
+      variant={variant} 
+      className="w-full sm:w-auto" 
+      disabled={disabled}
+      onClick={() => !disabled && setOpen(true)}
+    >
+      <Wand2 className="mr-2 h-4 w-4" />
+      {label}
+    </Button>
+  );
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button 
-          variant={variant} 
-          className="w-full sm:w-auto" 
-          disabled={disabled}
-          onClick={() => !disabled && setOpen(true)}
-        >
-          <Wand2 className="mr-2 h-4 w-4" />
-          {label}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full max-w-sm p-4" align="end">
-        <div className="space-y-4">
-          <h4 className="font-medium text-sm">Select Improvements</h4>
-          <div className="space-y-2">
-            {improvementOptions.map((option) => (
-              <div key={option.id} className="flex items-start space-x-2 border rounded-md p-2">
-                <Checkbox 
-                  id={option.id} 
-                  checked={selectedImprovements.includes(option.id)} 
-                  onCheckedChange={() => toggleImprovement(option.id)}
-                  className="mt-1"
-                />
-                <div className="grid gap-0.5">
-                  <Label htmlFor={option.id} className="cursor-pointer">
-                    {option.name}
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    {option.description}
-                  </p>
-                </div>
+    <>
+      {showTooltip ? (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {buttonElement}
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Enter or generate a prompt to enhance</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            {buttonElement}
+          </PopoverTrigger>
+          <PopoverContent className="w-full max-w-sm p-4" align="end">
+            <div className="space-y-4">
+              <h4 className="font-medium text-sm">Select Improvements</h4>
+              <div className="space-y-2">
+                {improvementOptions.map((option) => (
+                  <div key={option.id} className="flex items-start space-x-2 border rounded-md p-2">
+                    <Checkbox 
+                      id={option.id} 
+                      checked={selectedImprovements.includes(option.id)} 
+                      onCheckedChange={() => toggleImprovement(option.id)}
+                      className="mt-1"
+                    />
+                    <div className="grid gap-0.5">
+                      <Label htmlFor={option.id} className="cursor-pointer">
+                        {option.name}
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        {option.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <Button className="w-full" onClick={handleApplyImprovements}>
-            Apply Improvements
-          </Button>
-        </div>
-      </PopoverContent>
-    </Popover>
+              <Button className="w-full" onClick={handleApplyImprovements}>
+                Apply Improvements
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
+    </>
   );
 };

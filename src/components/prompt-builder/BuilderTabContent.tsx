@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FreeformPromptInput } from "./FreeformPromptInput";
 import { PromptBuilderForm } from "./PromptBuilderForm";
 import { GeneratedPrompt } from "./GeneratedPrompt";
@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { ImprovementOptions } from "./form-components/ImprovementOptions";
 import { useOpenAiApi } from "@/hooks/useOpenAiApi";
-import { ChatTest } from "@/components/ChatTest";
 
 interface BuilderTabContentProps {
   legalArea: string;
@@ -79,6 +78,14 @@ export const BuilderTabContent = ({
   const [promptText, setPromptText] = useState("");
   const { error } = useOpenAiApi();
   
+  // Track if we have input (either freeform or structured)
+  const [hasInput, setHasInput] = useState(false);
+  
+  // Update hasInput whenever promptText, legalArea, or taskType changes
+  useEffect(() => {
+    setHasInput(!!promptText.trim() || (!!legalArea && !!taskType));
+  }, [promptText, legalArea, taskType]);
+  
   const handleGenerateWithAI = () => {
     if (promptText.trim()) {
       handleCustomPromptSubmit(promptText.trim());
@@ -87,8 +94,10 @@ export const BuilderTabContent = ({
     }
   };
   
+  // Determine if the improve button should be enabled
   const shouldEnableImproveButton = () => {
-    return !!generatedPrompt && !isGeneratingResponse;
+    // Enable if we have a generated prompt and we're not currently generating a response
+    return (!!generatedPrompt || !!promptText.trim()) && !isGeneratingResponse;
   };
 
   return (
@@ -163,9 +172,6 @@ export const BuilderTabContent = ({
             error={error}
           />
         </div>
-
-        {/* Chat Test Component */}
-        <ChatTest />
       </div>
       
       <div className="lg:col-span-1">
