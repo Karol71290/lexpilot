@@ -14,28 +14,14 @@ export function useOpenAiApi() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Get the API key and model from localStorage
+  // Get the model from localStorage
   const getApiConfig = () => {
-    // Try to get API key from localStorage first
-    const savedApiKeys = localStorage.getItem("ai_api_keys");
-    let apiKey = "";
-    
-    if (savedApiKeys) {
-      try {
-        const keys = JSON.parse(savedApiKeys);
-        apiKey = keys.openai || "";
-      } catch (e) {
-        console.error("Failed to parse saved API keys:", e);
-      }
-    }
-    
     // Try to get selected model from localStorage
     const savedProvider = localStorage.getItem("ai_selected_provider");
     const savedModel = localStorage.getItem("ai_selected_model");
     const useLocalModel = savedProvider === "openai" && savedModel;
     
     return {
-      apiKey,
       model: useLocalModel ? savedModel : "gpt-4o" // Default to GPT-4o if no model is selected
     };
   };
@@ -45,7 +31,7 @@ export function useOpenAiApi() {
     setError(null);
     
     try {
-      const { apiKey, model } = getApiConfig();
+      const { model } = getApiConfig();
       
       // Wrap Supabase API call in try-catch to handle edge function errors properly
       let response;
@@ -58,8 +44,7 @@ export function useOpenAiApi() {
             prompt,
             model: options.model || model,
             temperature: options.temperature || 0.7,
-            maxTokens: options.maxTokens || 800,
-            apiKey: apiKey // Pass the API key from localStorage if available
+            maxTokens: options.maxTokens || 800
           },
         });
       } catch (e) {
@@ -75,7 +60,7 @@ export function useOpenAiApi() {
         // Show a more user-friendly toast message
         toast({
           title: "AI Service Error",
-          description: "There was an issue connecting to the OpenAI service. Please check your API key in Settings → AI Services.",
+          description: "There was an issue connecting to the OpenAI service. Please check if the OpenAI API key is configured properly.",
           variant: "destructive"
         });
         
@@ -95,7 +80,7 @@ export function useOpenAiApi() {
       // Show toast for unexpected errors
       toast({
         title: "Connection Error",
-        description: "Failed to connect to the AI service. Please check your API key in Settings → AI Services.",
+        description: "Failed to connect to the AI service. Please make sure the OpenAI API key is configured properly.",
         variant: "destructive"
       });
       

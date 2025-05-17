@@ -9,7 +9,7 @@ const corsHeaders = {
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
 // Get the API key from environment variables
-const DEFAULT_OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -22,8 +22,7 @@ serve(async (req) => {
       prompt, 
       model = "gpt-4o", 
       temperature = 0.7, 
-      maxTokens = 800,
-      apiKey = null // Allow for API key to be passed in request
+      maxTokens = 800
     } = await req.json();
     
     console.log(`Processing request with model: ${model}, temperature: ${temperature}`);
@@ -35,15 +34,14 @@ serve(async (req) => {
       );
     }
 
-    // Use the API key from the request if provided, otherwise use the environment variable
-    const OPENAI_API_KEY = apiKey || DEFAULT_OPENAI_API_KEY;
-    
+    // Verify that the API key is available
     if (!OPENAI_API_KEY) {
+      console.error("OpenAI API key not found in environment variables");
       return new Response(
         JSON.stringify({ 
-          error: "No API key provided. Please add your OpenAI API key in Settings → AI Services."
+          error: "OpenAI API key not configured on the server. Please contact the administrator."
         }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 

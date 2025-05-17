@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAISettings } from "@/hooks/useAISettings";
-import { Database, Key, Server } from "lucide-react";
+import { Server } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 // Define available AI providers and their models
 const AI_PROVIDERS = {
@@ -41,49 +41,13 @@ const AI_PROVIDERS = {
 export function AIServices() {
   const { toast } = useToast();
   const { 
-    apiKeys, 
     selectedProvider, 
     selectedModel,
-    saveAPIKey, 
     setSelectedProvider, 
     setSelectedModel,
     testConnection,
     connectionStatus
   } = useAISettings();
-  
-  const [providerInputs, setProviderInputs] = useState<Record<string, string>>({
-    gemini: "",
-    openai: "",
-    anthropic: ""
-  });
-  
-  // Initialize provider inputs with stored API keys
-  useEffect(() => {
-    const initialInputs = {...providerInputs};
-    Object.keys(apiKeys).forEach(provider => {
-      if (apiKeys[provider]) {
-        initialInputs[provider] = "••••••••••••••••";
-      }
-    });
-    setProviderInputs(initialInputs);
-  }, [apiKeys]);
-  
-  const handleInputChange = (provider: string, value: string) => {
-    setProviderInputs(prev => ({
-      ...prev,
-      [provider]: value
-    }));
-  };
-  
-  const handleSaveAPIKey = (provider: string) => {
-    if (providerInputs[provider] && providerInputs[provider] !== "••••••••••••••••") {
-      saveAPIKey(provider, providerInputs[provider]);
-      toast({
-        title: "API Key Saved",
-        description: `Your ${AI_PROVIDERS[provider as keyof typeof AI_PROVIDERS]?.label} API key has been saved.`
-      });
-    }
-  };
   
   const handleTestConnection = async () => {
     if (!selectedProvider || !selectedModel) {
@@ -113,65 +77,15 @@ export function AIServices() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Key className="h-5 w-5" /> 
-            API Keys
-          </CardTitle>
-          <CardDescription>
-            Manage your AI service provider API keys
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Order the providers to show OpenAI first */}
-          {Object.entries(AI_PROVIDERS).sort(([a], [b]) => a === "openai" ? -1 : b === "openai" ? 1 : 0).map(([providerId, provider]) => (
-            <div key={providerId} className="space-y-2">
-              <Label htmlFor={`${providerId}-key`}>{provider.label} API Key</Label>
-              <div className="flex gap-3">
-                <Input
-                  id={`${providerId}-key`}
-                  type="password"
-                  placeholder={`Enter your ${provider.label} API key`}
-                  value={providerInputs[providerId]}
-                  onChange={(e) => handleInputChange(providerId, e.target.value)}
-                  className="flex-1"
-                />
-                <Button onClick={() => handleSaveAPIKey(providerId)}>Save</Button>
-              </div>
-              {providerId === "openai" && (
-                <p className="text-xs text-muted-foreground">
-                  <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">
-                    Get an OpenAI API key
-                  </a>
-                </p>
-              )}
-              {providerId === "gemini" && (
-                <p className="text-xs text-muted-foreground">
-                  <a href="https://ai.google.dev/tutorials/setup" target="_blank" rel="noopener noreferrer" className="underline">
-                    Get a Gemini API key
-                  </a>
-                </p>
-              )}
-              {providerId === "anthropic" && (
-                <p className="text-xs text-muted-foreground">
-                  <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" className="underline">
-                    Get an Anthropic API key
-                  </a>
-                </p>
-              )}
-            </div>
-          ))}
-          
-          <div className="pt-4 border-t">
-            <p className="text-sm text-muted-foreground mb-2">
-              Note: API keys are stored in your browser's local storage. For more secure storage, 
-              consider using Supabase Edge Functions with encrypted secrets.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-      
+      <Alert variant="info">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>AI Configuration Information</AlertTitle>
+        <AlertDescription>
+          API keys are now stored securely in Supabase environment variables and managed server-side. 
+          Please contact your administrator to update API keys.
+        </AlertDescription>
+      </Alert>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
