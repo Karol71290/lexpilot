@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface GeminiOptions {
   model?: "gemini-pro" | "gemini-pro-vision";
@@ -12,6 +13,7 @@ interface GeminiOptions {
 export function useGeminiApi() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const generateWithGemini = async (prompt: string, options: GeminiOptions = {}) => {
     setIsLoading(true);
@@ -36,8 +38,17 @@ export function useGeminiApi() {
       }
 
       if (response.error) {
+        const errorMessage = response.error.message || "Failed to generate response";
         console.error("Error calling Gemini API:", response.error);
-        setError(response.error.message || "Failed to generate response");
+        setError(errorMessage);
+        
+        // Show a more user-friendly toast message
+        toast({
+          title: "API Error",
+          description: "There was an issue connecting to the Gemini AI service. Please try again later.",
+          variant: "destructive"
+        });
+        
         return null;
       }
 
@@ -46,6 +57,14 @@ export function useGeminiApi() {
       const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
       console.error("Exception in generateWithGemini:", errorMessage);
       setError(errorMessage);
+      
+      // Show toast for unexpected errors
+      toast({
+        title: "Connection Error",
+        description: "Failed to connect to the AI service. Please check your network and try again.",
+        variant: "destructive"
+      });
+      
       return null;
     } finally {
       setIsLoading(false);

@@ -8,6 +8,7 @@ import { PopularTemplates } from "./PopularTemplates";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { ImprovementOptions } from "./form-components/ImprovementOptions";
+import { useGeminiApi } from "@/hooks/useGeminiApi";
 
 interface BuilderTabContentProps {
   legalArea: string;
@@ -75,6 +76,7 @@ export const BuilderTabContent = ({
   handleTemplateSelect
 }: BuilderTabContentProps) => {
   const [promptText, setPromptText] = useState("");
+  const { error } = useGeminiApi();
   
   const handleGenerateWithAI = () => {
     if (promptText.trim()) {
@@ -97,6 +99,7 @@ export const BuilderTabContent = ({
             setTemperature={setTemperature}
             maxTokens={maxTokens}
             setMaxTokens={setMaxTokens}
+            error={error}
           />
           
           {/* Prompt Builder Form */}

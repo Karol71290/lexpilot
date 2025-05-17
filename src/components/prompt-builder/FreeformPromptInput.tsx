@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { ModelSettings } from "./form-components/ModelSettings";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 interface FreeformPromptInputProps {
   promptText: string;
@@ -11,6 +13,7 @@ interface FreeformPromptInputProps {
   setTemperature: (value: number) => void;
   maxTokens: number;
   setMaxTokens: (value: number) => void;
+  error?: string | null;
 }
 
 export const FreeformPromptInput = ({
@@ -19,7 +22,8 @@ export const FreeformPromptInput = ({
   temperature,
   setTemperature,
   maxTokens,
-  setMaxTokens
+  setMaxTokens,
+  error
 }: FreeformPromptInputProps) => {
   return (
     <Card className="mb-6">
@@ -40,6 +44,13 @@ export const FreeformPromptInput = ({
         </div>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <ExclamationTriangleIcon className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
         <Textarea
           placeholder="Type or paste your prompt here (e.g., 'Summarize this clause under UK trademark law')"
           value={promptText}
