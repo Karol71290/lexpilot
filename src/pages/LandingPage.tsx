@@ -69,10 +69,13 @@ const LandingPage = () => {
           <div className="lg:w-1/2 lg:pl-12">
             <div className="bg-white rounded-lg shadow-xl overflow-hidden border border-gray-100">
               <img 
-                src="/placeholder.svg" 
-                alt="LexPilot Dashboard Preview" 
+                src="https://images.unsplash.com/photo-1643704811778-730072fbffa6?q=80&w=1600&auto=format&fit=crop"
+                alt="LexPilot AI Legal Assistant" 
                 className="w-full object-cover h-80"
               />
+              <div className="p-4 bg-white">
+                <p className="text-sm text-gray-500 text-center">LexPilot's AI-powered interface helps legal professionals work smarter</p>
+              </div>
             </div>
           </div>
         </div>
