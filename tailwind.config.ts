@@ -53,13 +53,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				lawadapt: {
-					purple: '#9b87f5',
-					secondary: '#7E69AB',
-					neutral: '#8E9196',
-					accent: '#0EA5E9',
-					light: '#F1F0FB',
-					dark: '#1A1F2C'
+				lexpilot: {
+					navy: '#0B2B4D',
+					teal: '#38B7C8',
+					light: '#F1F8FA', 
+					dark: '#0B2B4D',
+					secondary: '#1F4D80'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

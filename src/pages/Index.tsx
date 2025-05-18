@@ -28,9 +28,19 @@ const Index = () => {
   return (
     <AppLayout title="Dashboard">
       <div className="grid gap-6">
-        <section>
+        <section className="mb-8">
+          <div className="flex flex-col items-center justify-center text-center mb-8">
+            <img 
+              src="/lovable-uploads/916f0dcb-d7f5-4370-8fbc-8da1ab90b6f6.png" 
+              alt="LexPilot Logo" 
+              className="h-20 mb-4" 
+            />
+            <h1 className="text-3xl font-bold">Welcome to LexPilot</h1>
+            <p className="text-muted-foreground">AI co-pilot for legal teams</p>
+          </div>
+          
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold">Welcome to Lex Pilot</h2>
+            <h2 className="text-2xl font-bold">Quick Access</h2>
             <Button asChild>
               <Link to="/quiz">Take AI Adoption Quiz</Link>
             </Button>

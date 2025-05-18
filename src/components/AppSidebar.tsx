@@ -101,8 +101,8 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="flex items-center px-6 py-5">
         <span className="text-xl font-bold text-white flex items-center">
-          <BookOpen className="mr-2" />
-          Lex Pilot
+          <img src="/lovable-uploads/916f0dcb-d7f5-4370-8fbc-8da1ab90b6f6.png" alt="LexPilot Logo" className="h-8 mr-2" />
+          LexPilot
         </span>
       </SidebarHeader>
 
