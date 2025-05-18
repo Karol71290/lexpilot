@@ -12,6 +12,7 @@ import {
   LucideIcon,
   FileStack,
   Sparkles,
+  Home,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import SidebarItem from "@/components/SidebarItem";
@@ -42,8 +43,13 @@ export function AppSidebar() {
   
   const mainNavItems: NavItem[] = [
     {
-      title: "Dashboard",
+      title: "Home",
       path: "/",
+      icon: Home,
+    },
+    {
+      title: "Dashboard",
+      path: "/dashboard",
       icon: LayoutDashboard,
     },
     {
